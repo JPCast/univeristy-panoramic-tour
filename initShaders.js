@@ -4,7 +4,7 @@
 //
 //	Getting, compiling and linking the vertex and the fragment shaders
 //
-//  J. Madeira - October 2015
+//  J. Madeira - October 2015 / November 2015
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -70,10 +70,19 @@ function initShaders( gl ) {
 	shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
 	gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
 
-	// Colors 
+	// NEW --- Texture coordinates
 	
-	shaderProgram.vertexColorAttribute = gl.getAttribLocation(shaderProgram, "aVertexColor");
-	gl.enableVertexAttribArray(shaderProgram.vertexColorAttribute);
-	
+    shaderProgram.textureCoordAttribute = gl.getAttribLocation(shaderProgram, "aTextureCoord");
+    gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
+
+	// NEW --- The matrices
+	 
+    shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
+    shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
+    
+    // NEW --- The sampler
+    
+    shaderProgram.samplerUniform = gl.getUniformLocation(shaderProgram, "uSampler");
+
 	return shaderProgram;
 }
