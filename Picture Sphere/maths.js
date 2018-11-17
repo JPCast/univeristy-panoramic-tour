@@ -518,4 +518,44 @@ function perspective( fovy, aspect, near, far )
     return result;
 }
 
+//----------------------------------------------------------------------------
+//
+//  Operations for 3D Points and Vectors
+//
 
+function computeMidPoint( p1, p2 )
+{
+    var result = vec3();
+    
+    result[0] = (p1[0]+p2[0])/2;
+    result[1] = (p1[1]+p2[1])/2;
+    result[2] = (p1[2]+p2[2])/2;
+        
+    return result;
+}
+
+function computeCentroid( p1, p2, p3 )
+{
+    var result = vec3();
+    
+    result[0] = (p1[0]+p2[0]+p3[0])/3;
+    result[1] = (p1[1]+p2[1]+p3[1])/3;
+    result[2] = (p1[2]+p2[2]+p3[2])/3;
+    
+    return result;
+}
+
+//----------------------------------------------------------------------------
+
+function normalize( v )
+{
+    var result = vec3();
+    
+    var l = Math.sqrt(v[0]*v[0]+v[1]*v[1]+v[2]*v[2])
+
+    result[0] = v[0]/l;
+    result[1] = v[1]/l;
+    result[2] = v[2]/l;
+    
+    return result;
+}
