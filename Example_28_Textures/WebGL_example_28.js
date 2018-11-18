@@ -28,6 +28,8 @@ var triangleVertexIndexBuffer = null;
 
 var triangleVertexTextureCoordBuffer;
 
+var triangleVertexColorBuffer = null;
+
 // The GLOBAL transformation parameters
 
 var globalAngleYY = 0.0;
@@ -72,19 +74,19 @@ var rotationXX_ON = 1;
 
 var rotationXX_DIR = 1;
 
-var rotationXX_SPEED = 0;
+var rotationXX_SPEED = 1;
  
 var rotationYY_ON = 1;
 
 var rotationYY_DIR = 1;
 
-var rotationYY_SPEED = 0;
+var rotationYY_SPEED = 1;
  
 var rotationZZ_ON = 1;
 
 var rotationZZ_DIR = 1;
 
-var rotationZZ_SPEED = 0;
+var rotationZZ_SPEED = 1;
  
 // To allow choosing the way of drawing the model triangles
 
@@ -196,7 +198,75 @@ var cubeVertexIndices = [
             20, 21, 22,   20, 22, 23  // Left face
 ];
 
-verticesMap = [
+// And their colour
+
+var colors = [
+
+    // FRONT FACE - RED
+
+    1.00, 0.00, 0.00,
+
+    1.00, 0.00, 0.00,
+
+    1.00, 0.00, 0.00,
+
+    1.00, 0.00, 0.00,
+
+    // BACK FACE - BLACK
+
+    0.00, 0.00, 0.00,
+
+    0.00, 0.00, 0.00,
+
+    0.00, 0.00, 0.00,
+
+    0.00, 0.00, 0.00,
+
+    // TOP FACE - 
+
+    1.00, 1.00, 0.00,
+
+    1.00, 1.00, 0.00,
+
+    1.00, 1.00, 0.00,
+
+    1.00, 1.00, 0.00,
+
+
+    // BOTTOM FACE
+
+    0.00, 1.00, 1.00,
+
+    0.00, 1.00, 1.00,
+
+    0.00, 1.00, 1.00,
+
+    0.00, 1.00, 1.00,
+
+
+    // RIGHT FACE - BLUE
+
+    0.00, 0.00, 1.00,
+
+    0.00, 0.00, 1.00,
+
+    0.00, 0.00, 1.00,
+
+    0.00, 0.00, 1.00,
+
+
+    // LEFT FACE - GREEN
+
+    0.00, 1.00, 0.00,
+
+    0.00, 1.00, 0.00,
+
+    0.00, 1.00, 0.00,
+
+    0.00, 1.00, 0.00,
+];
+
+var verticesMap = [
     // Front face
     -2.90, -2.90, 0,
     2.90, -2.90, 0,
@@ -283,12 +353,13 @@ function initBuffers() {
 	triangleVertexPositionBuffer.itemSize = 3;
 	triangleVertexPositionBuffer.numItems = vertices.length / 3;			
 
-	// Textures
-    triangleVertexTextureCoordBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexTextureCoordBuffer);
- 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoords), gl.STATIC_DRAW);
-    triangleVertexTextureCoordBuffer.itemSize = 2;
-    triangleVertexTextureCoordBuffer.numItems = 24;			
+    // Colors
+
+    triangleVertexColorBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexColorBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
+    triangleVertexColorBuffer.itemSize = 3;
+    triangleVertexColorBuffer.numItems = vertices.length / 3;
 
 	// Vertex indices
     triangleVertexIndexBuffer = gl.createBuffer();
@@ -345,20 +416,18 @@ function drawModel( angleXX, angleYY, angleZZ,
     gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexPositionBuffer);
     gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, triangleVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
-	// NEW --- Textures
-    gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexTextureCoordBuffer);
-    gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, triangleVertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
-    gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D, webGLTexture); 
-    gl.uniform1i(shaderProgram.samplerUniform, 0);
-    
+    //Color
+    gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexColorBuffer);
+    gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, triangleVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+    //Texture or color
+    gl.uniform1f(shaderProgram.isTexture, 0);
+
     // The vertex indices
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, triangleVertexIndexBuffer);
-	// Drawing the triangles --- NEW --- DRAWING ELEMENTS 
-    gl.drawElements(gl.TRIANGLES, 18, gl.UNSIGNED_SHORT, 0);	
-    // Texture 2
-    gl.bindTexture(gl.TEXTURE_2D, webGLTexture2); 
-    gl.drawElements(gl.TRIANGLES, 24, gl.UNSIGNED_SHORT, 24);	
+
+    // Drawing the triangles --- NEW --- DRAWING ELEMENTS 
+    gl.drawElements(gl.TRIANGLES, triangleVertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);	
 }
 
 function drawModelMap(angleXX, angleYY, angleZZ,
@@ -393,7 +462,7 @@ function drawModelMap(angleXX, angleYY, angleZZ,
 
     // NEW --- Textures
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexTextureCoordBuffer);
+    gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexTextureCoordBuffer);
     gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, cubeVertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
     gl.activeTexture(gl.TEXTURE0);
@@ -401,13 +470,16 @@ function drawModelMap(angleXX, angleYY, angleZZ,
 
     gl.uniform1i(shaderProgram.samplerUniform, 0);
 
+    //Texture or color
+    gl.uniform1f(shaderProgram.isTexture, 1);
+
     // The vertex indices
 
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, triangleVertexIndexBuffer);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeVertexIndexBuffer);
 
     // Drawing the triangles --- NEW --- DRAWING ELEMENTS 
 
-    gl.drawElements(gl.TRIANGLES, 18, gl.UNSIGNED_SHORT, 0);
+    gl.drawElements(gl.TRIANGLES, cubeVertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
 }
 
 //----------------------------------------------------------------------------
@@ -463,41 +535,59 @@ function drawScene() {
 	// And with diferent transformation parameters !!
 	
 	// Call the drawModel function !!
-	
-	// Instance 1 --- RIGHT TOP
+
+    // Instance --- Departamento de matemática
+
+    drawModel(-angleXX, -angleYY, -angleZZ,  // CW rotations
+        sx * 0.1, sy * 0.1, sz * 0.1,
+        tx + 0.1, ty + 0.30, tz,
+        mvMatrix,
+        primitiveType);
+
+    // Instance --- Departamento Território
+
+    drawModel(-angleXX, -angleYY, -angleZZ,  // CW rotations
+        sx * 0.11, sy * 0.11, sz * 0.11,
+        tx + 0.07, ty + 0.25, tz,
+        mvMatrix,
+        primitiveType);
+
+	// Instance --- Departamento mecanica
 	
 	drawModel( -angleXX, angleYY, angleZZ, 
-        sx * 0.25, sy * 0.25, sz * 0.25,
-	           tx - 0.15, ty + 0.28, tz,
+        sx * 0.12, sy * 0.12, sz * 0.12,
+	           tx + 0.03, ty + 0.20, tz,
 	           mvMatrix,
 	           primitiveType );
 	           	       
-	// Instance 2 --- LEFT TOP
 	
-	drawModel( -angleXX, -angleYY, -angleZZ,  // CW rotations
-        sx * 0.25, sy * 0.25, sz * 0.25,
-	           tx - 0.01, ty + 0.35, tz,
-	           mvMatrix,
-	           primitiveType );
 	           
-	// Instance 3 --- LEFT BOTTOM
+	// Instance --- Departamento ???
 	
 	drawModel( angleXX, angleYY, -angleZZ, 
-        sx * 0.25, sy * 0.25, sz * 0.25,
-	           tx - 0.1, ty + 0.18, tz,
+        sx * 0.13, sy * 0.13, sz * 0.13,
+	           tx - 0.02, ty + 0.12, tz,
 	           mvMatrix,
 	           primitiveType );
 	           	       
-	// Instance 4 --- RIGHT BOTTOM
+	// Instance --- Departamento civil ???
 	
 	drawModel( angleXX, -angleYY, angleZZ,  // CW rotations
-        sx * 0.25, sy * 0.25, sz * 0.25,
-	           tx - 0.2, ty + 0.1, tz,
+        sx * 0.14, sy * 0.14, sz * 0.14,
+	           tx - 0.08, ty + 0.04, tz,
 	           mvMatrix,
         primitiveType);
 
+    // Instance --- Departamento ???
+
+    drawModel(angleXX, -angleYY, angleZZ,  // CW rotations
+        sx * 0.15, sy * 0.15, sz * 0.15,
+        tx - 0.16, ty - 0.08, tz,
+        mvMatrix,
+        primitiveType);
+
     // Map
-    drawModelMap(-angleXX, angleYY, angleZZ,
+    drawModelMap(0.0, 0.0, 0.0,
         sx, sy, sz,
         tx, ty, tz,
         mvMatrix,
@@ -769,7 +859,8 @@ function runWebGL() {
 	var canvas = document.getElementById("my-canvas");
 	initWebGL( canvas );
 	shaderProgram = initShaders( gl );
-	setEventListeners( canvas );
+    setEventListeners(canvas);
+    //centroidRefinement(vertices, colors, 10);
 	moveToSphericalSurface( vertices );
 	gl.enable( gl.CULL_FACE );
 	gl.enable( gl.DEPTH_TEST );
