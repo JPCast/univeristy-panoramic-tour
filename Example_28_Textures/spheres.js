@@ -1,5 +1,5 @@
-var canvas, 
-gl, 
+var canvas_360, 
+gl_360, 
 picture, picture_texture,
 buffer, 
 vertex_shader, fragment_shader, currentProgram,
@@ -19,41 +19,39 @@ function init(preview_url) {
 
     //picture.src = preview_url;			
 
-	//canvas = document.querySelector( 'canvas' );
-	canvas = document.getElementById("360-canvas");
+	canvas_360 = document.getElementById("360-canvas");
 					
 	vertex_shader = document.getElementById('vs').textContent;
 	fragment_shader = document.getElementById('fs').textContent;				
 	
 	// Initialise WebGL
-	/* Commented by me
 	try {
-		gl = canvas.getContext( 'experimental-webgl' );
+		gl_360 = canvas_360.getContext( 'experimental-webgl' );
 	} catch( error ) { }
 
-	if ( !gl ) {
+	if ( !gl_360 ) {
 		throw "cannot create webgl context";
-	}*/
+	}
 
 	// Create Vertex buffer (2 triangles)
-	buffer = gl.createBuffer();
-	gl.bindBuffer( gl.ARRAY_BUFFER, buffer );
-	gl.bufferData( gl.ARRAY_BUFFER, new Float32Array( [ - 1.0, - 1.0, 1.0, - 1.0, - 1.0, 1.0, 1.0, - 1.0, 1.0, 1.0, - 1.0, 1.0 ] ), gl.STATIC_DRAW );
+	buffer = gl_360.createBuffer();
+	gl_360.bindBuffer( gl_360.ARRAY_BUFFER, buffer );
+	gl_360.bufferData( gl_360.ARRAY_BUFFER, new Float32Array( [ - 1.0, - 1.0, 1.0, - 1.0, - 1.0, 1.0, 1.0, - 1.0, 1.0, 1.0, - 1.0, 1.0 ] ), gl_360.STATIC_DRAW );
 
 	// Create texture for picture
 	createTexture( preview_url );
 
 	// Create Program
-	//currentProgram = createProgram( vertex_shader, fragment_shader );
+	currentProgram = createProgram( vertex_shader, fragment_shader );
 
 	handleResize();
 	window.addEventListener( 'resize', handleResize, false );
 	
 	// Initialise interaction
-	canvas.onmousedown = handleMouseDown;
+	canvas_360.onmousedown = handleMouseDown;
 	document.onmouseup = handleMouseUp;
-	canvas.onmousemove = handleMouseMove;
-	canvas.ondblclick = handleDoubleClick;				
+	canvas_360.onmousemove = handleMouseMove;
+	canvas_360.ondblclick = handleDoubleClick;				
 }
 
 
@@ -69,37 +67,37 @@ function render() {
 
 	parameters.time = new Date().getTime() - parameters.start_time;
 
-	gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
+	gl_360.clear( gl_360.COLOR_BUFFER_BIT | gl_360.DEPTH_BUFFER_BIT );
 
 	// Load program into GPU
-	gl.useProgram( currentProgram );
+	gl_360.useProgram( currentProgram );
 	
-	gl.bindTexture(gl.TEXTURE_2D, picture_texture);
+	gl_360.bindTexture(gl_360.TEXTURE_2D, picture_texture);
 
 	// Set values to program variables
-    gl.uniform2f(gl.getUniformLocation(currentProgram, 'resolution'), parameters.screenWidth, parameters.screenHeight);
-    gl.uniform1f(gl.getUniformLocation(currentProgram, 'fov'), 80);
+    gl_360.uniform2f(gl_360.getUniformLocation(currentProgram, 'resolution'), parameters.screenWidth, parameters.screenHeight);
+    gl_360.uniform1f(gl_360.getUniformLocation(currentProgram, 'fov'), 80);
 
-    gl.uniform1f(gl.getUniformLocation(currentProgram, 'yaw'), yaw);        // ao eliminar não dá para mexer para os lados
-	gl.uniform1f( gl.getUniformLocation( currentProgram, 'pitch' ), -pitch );	// ao eliminar não dá para mexer para cima ou para baixo
+    gl_360.uniform1f(gl_360.getUniformLocation(currentProgram, 'yaw'), yaw);        // ao eliminar não dá para mexer para os lados
+	gl_360.uniform1f( gl_360.getUniformLocation( currentProgram, 'pitch' ), -pitch );	// ao eliminar não dá para mexer para cima ou para baixo
 
 	// Render geometry
-	gl.bindBuffer( gl.ARRAY_BUFFER, buffer );
-	gl.vertexAttribPointer( vertex_position, 2, gl.FLOAT, false, 0, 0 );
-	gl.enableVertexAttribArray( vertex_position );
-	gl.drawArrays( gl.TRIANGLES, 0, 6 );
-	gl.disableVertexAttribArray( vertex_position );
+	gl_360.bindBuffer( gl_360.ARRAY_BUFFER, buffer );
+	gl_360.vertexAttribPointer( vertex_position, 2, gl_360.FLOAT, false, 0, 0 );
+	gl_360.enableVertexAttribArray( vertex_position );
+	gl_360.drawArrays( gl_360.TRIANGLES, 0, 6 );
+	gl_360.disableVertexAttribArray( vertex_position );
 }
 
 
 function createShader( src, type ) {
-	var shader = gl.createShader( type );
+	var shader = gl_360.createShader( type );
 
-	gl.shaderSource( shader, src );
-	gl.compileShader( shader );
+	gl_360.shaderSource( shader, src );
+	gl_360.compileShader( shader );
 
-	if ( !gl.getShaderParameter( shader, gl.COMPILE_STATUS ) ) {
-		alert( ( type == gl.VERTEX_SHADER ? "VERTEX" : "FRAGMENT" ) + " SHADER:\n" + gl.getShaderInfoLog( shader ) );
+	if ( !gl_360.getShaderParameter( shader, gl_360.COMPILE_STATUS ) ) {
+		alert( ( type == gl_360.VERTEX_SHADER ? "VERTEX" : "FRAGMENT" ) + " SHADER:\n" + gl_360.getShaderInfoLog( shader ) );
 		return null;
 	}
 
@@ -109,25 +107,25 @@ function createShader( src, type ) {
 
 function createProgram( vertex, fragment ) {
 
-	var program = gl.createProgram();
+	var program = gl_360.createProgram();
 
-	var vs = createShader( vertex, gl.VERTEX_SHADER );
-	var fs = createShader( '#ifdef GL_ES\nprecision highp float;\n#endif\n\n' + fragment, gl.FRAGMENT_SHADER );
+	var vs = createShader( vertex, gl_360.VERTEX_SHADER );
+	var fs = createShader( '#ifdef GL_ES\nprecision highp float;\n#endif\n\n' + fragment, gl_360.FRAGMENT_SHADER );
 
 	if ( vs == null || fs == null ) return null;
 
-	gl.attachShader( program, vs );
-	gl.attachShader( program, fs );
+	gl_360.attachShader( program, vs );
+	gl_360.attachShader( program, fs );
 
-	gl.deleteShader( vs );
-	gl.deleteShader( fs );
+	gl_360.deleteShader( vs );
+	gl_360.deleteShader( fs );
 
-	gl.linkProgram( program );
+	gl_360.linkProgram( program );
 
-	if ( !gl.getProgramParameter( program, gl.LINK_STATUS ) ) {
+	if ( !gl_360.getProgramParameter( program, gl_360.LINK_STATUS ) ) {
 		alert( "ERROR:\n" +
-		"VALIDATE_STATUS: " + gl.getProgramParameter( program, gl.VALIDATE_STATUS ) + "\n" +
-		"ERROR: " + gl.getError() + "\n\n" +
+		"VALIDATE_STATUS: " + gl_360.getProgramParameter( program, gl_360.VALIDATE_STATUS ) + "\n" +
+		"ERROR: " + gl_360.getError() + "\n\n" +
 		"- Vertex Shader -\n" + vertex + "\n\n" +
 		"- Fragment Shader -\n" + fragment );
 
@@ -139,18 +137,18 @@ function createProgram( vertex, fragment ) {
 
 
 function createTexture( image_src ) {
-	picture_texture = gl.createTexture();
+	picture_texture = gl_360.createTexture();
 	picture_texture.image = new Image();
 	
 	picture_texture.image.onload = function() {
-		gl.bindTexture(gl.TEXTURE_2D, picture_texture);
-		gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, picture_texture.image);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-		gl.bindTexture(gl.TEXTURE_2D, null);
+		gl_360.bindTexture(gl_360.TEXTURE_2D, picture_texture);
+		gl_360.pixelStorei(gl_360.UNPACK_FLIP_Y_WEBGL, true);
+		gl_360.texImage2D(gl_360.TEXTURE_2D, 0, gl_360.RGBA, gl_360.RGBA, gl_360.UNSIGNED_BYTE, picture_texture.image);
+		gl_360.texParameteri(gl_360.TEXTURE_2D, gl_360.TEXTURE_MAG_FILTER, gl_360.LINEAR);
+		gl_360.texParameteri(gl_360.TEXTURE_2D, gl_360.TEXTURE_MIN_FILTER, gl_360.LINEAR);
+		gl_360.texParameteri(gl_360.TEXTURE_2D, gl_360.TEXTURE_WRAP_S, gl_360.CLAMP_TO_EDGE);
+		gl_360.texParameteri(gl_360.TEXTURE_2D, gl_360.TEXTURE_WRAP_T, gl_360.CLAMP_TO_EDGE);
+		gl_360.bindTexture(gl_360.TEXTURE_2D, null);
 	}
 
 	picture_texture.image.src = image_src;
@@ -159,25 +157,26 @@ function createTexture( image_src ) {
 
 
 function handleResize( event ) {
-	//canvas.width = window.innerWidth;
-	//canvas.height = window.innerHeight;
+	//The next two lines resize the canvas_360 to the whole windows size
+	//canvas_360.width = window.innerWidth;
+	//canvas_360.height = window.innerHeight;
 
-	parameters.screenWidth = canvas.width;
-	parameters.screenHeight = canvas.height;
+	parameters.screenWidth = canvas_360.width;
+	parameters.screenHeight = canvas_360.height;
 
-	gl.viewport( 0, 0, canvas.width, canvas.height );
+	gl_360.viewport( 0, 0, canvas_360.width, canvas_360.height );
 }
 
 
 function handleDoubleClick(event) {
 	var isInFullScreen = (document.fullScreen || document.mozFullScreen || document.webkitIsFullScreen);
 	if(!isInFullScreen) {
-		if (canvas.requestFullscreen) {
-			canvas.requestFullscreen();
-		} else if (canvas.mozRequestFullScreen) {
-			canvas.mozRequestFullScreen();
-		} else if (canvas.webkitRequestFullscreen) {
-			canvas.webkitRequestFullscreen();
+		if (canvas_360.requestFullscreen) {
+			canvas_360.requestFullscreen();
+		} else if (canvas_360.mozRequestFullScreen) {
+			canvas_360.mozRequestFullScreen();
+		} else if (canvas_360.webkitRequestFullscreen) {
+			canvas_360.webkitRequestFullscreen();
 		}			
 	} else {
 		if(document.cancelFullScreen) {
@@ -231,6 +230,11 @@ function handleMouse() {
 }
 
 function run_panoramic_view() {
-	init("Photos/DMAT.jpg");
+	/*if(number == null){
+		window.location.href = "Picture Sphere.html";
+	}
+	else {*/
+	init("Photos/DMAT.jpg"); //names have changed meanwhile
 	animate();
+	//}
 }
