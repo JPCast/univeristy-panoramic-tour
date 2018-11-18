@@ -18,6 +18,7 @@
 
     <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 
+
     <!--
 
     The vertex and fragment shaders.
@@ -61,6 +62,53 @@
 
     </script>
 
+    <script id="vs" type="x-shader/vertex"> 
+		attribute vec3 position;
+
+		void main() {
+			gl_Position = vec4( position, 1.0 );
+		}
+	</script> 
+
+	<script id="fs" type="x-shader/fragment"> 
+		uniform vec2 resolution;
+		uniform sampler2D texture;
+		uniform float fov;
+		uniform float yaw; 
+		uniform float pitch;
+		const float M_PI = 3.141592653589793238462643;
+		const float M_TWOPI = 6.283185307179586476925286;
+		mat3 rotationMatrix(vec2 euler)
+		{
+			vec2 se = sin(euler);
+			vec2 ce = cos(euler);
+			return 	mat3(ce.x, 0, -se.x,	0, 1, 0,		se.x, 0, ce.x) * 
+					mat3(1, 0, 0,			0, ce.y, -se.y,	0, se.y, ce.y);
+		}
+
+		vec3 toCartesian( vec2 st )
+		{
+			return normalize(vec3(st.x, st.y, 0.5 / tan(0.5 * radians(fov))));
+		}
+		vec2 toSpherical(vec3 cartesianCoord)
+		{
+			vec2 st = vec2(
+				atan(cartesianCoord.x, cartesianCoord.z),
+				acos(cartesianCoord.y)
+			);
+			if(st.x < 0.0)
+				st.x += M_TWOPI;	
+			return st;
+		}
+		void main(void)
+		{
+			vec2 sphericalCoord = gl_FragCoord.xy / resolution - vec2(0.5);
+			sphericalCoord.y *= -resolution.y / resolution.x;
+			vec3 cartesianCoord = rotationMatrix(radians(vec2(yaw + 180., -pitch))) * toCartesian(sphericalCoord);
+			gl_FragColor = texture2D(texture, toSpherical( cartesianCoord )/vec2(M_TWOPI, M_PI));
+		}
+	</script> 
+
     <!-- The JS files -->
     <!-- Some useful functions for browser compatibility -->
 
@@ -69,6 +117,12 @@
     <!-- Handling vectors and matrices -->
 
     <script type="text/javascript" src="maths.js"></script>
+
+	<!-- Processing triangle mesh models -->
+
+	<script type="text/javascript" src="models.js"></script>
+
+	<script type="text/javascript" src="spheres.js"></script>
 
     <!-- WebGL code -->
 
@@ -82,64 +136,15 @@
 
 	<div style="text-align: center">
 		
-		<p>Applying a texture to the model's faces</p>
+		<p>University Map</p>
 		
-		<canvas id="my-canvas" style="border:1px solid #000000;" width="650" height="650"></canvas>
+		<canvas id="my-canvas" style="border:1px solid #000000;" width="1150" height="650"></canvas>
 
-        <p>Use cursor keys to spin and <code>Page Up</code>/<code>Page Down</code> to zoom out/in.</p>
-		
-		<p>Press any mouse button and move the cursor to rotate the models.</p>
-		
-		<p>XX rotation: 
-			
-		<button id="XX-on-off-button">On / Off</button>
-
-	    <button id="XX-direction-button">Change Direction</button>
-
-	    <button id="XX-slower-button">Slower</button>
-
-	    <button id="XX-faster-button">Faster</button>
-
-		</p>
-		
-		<p>YY rotation: 
-			
-		<button id="YY-on-off-button">On / Off</button>
-
-	    <button id="YY-direction-button">Change Direction</button>
-
-	    <button id="YY-slower-button">Slower</button>
-
-	    <button id="YY-faster-button">Faster</button>
-
-		</p>
-		
-		<p>ZZ rotation: 
-			
-		<button id="ZZ-on-off-button">On / Off</button>
-
-	    <button id="ZZ-direction-button">Change Direction</button>
-
-	    <button id="ZZ-slower-button">Slower</button>
-
-	    <button id="ZZ-faster-button">Faster</button>
-
-		</p>
-		
-		<p>Choose the <b>projection type</b>:
-		
-        <select id="projection-selection">
-			<option value="0">Orthogonal Projection</option>
-			<option value="1">Perspective Projection</option>
-        </select>
-        
-        </p>
-                
-		<p>
-		
-		<button id="reset-button">Reset</button>
+		<p> Panoramic View </p>
+		<canvas id="360-canvas" style="border:1px solid #000000;" width="850" height="650"></canvas>
+		<picture></picture>
 				
-		</p>
+		
 				
 	</div>
 

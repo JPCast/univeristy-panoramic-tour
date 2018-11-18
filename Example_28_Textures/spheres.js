@@ -1,0 +1,236 @@
+var canvas, 
+gl, 
+picture, picture_texture,
+buffer, 
+vertex_shader, fragment_shader, currentProgram,
+vertex_position, 
+parameters = {	start_time	: new Date().getTime(), 
+				time		: 0, 
+				screenWidth	: 0, 
+				screenHeight: 0 },
+currentlyDragging = false,
+currentDragX = 0, currentDragY = 0,
+startDragX = 0, startDragY = 0,
+xSpeed = 0, ySpeed = 0,
+yaw = 0, pitch = 0, fov = 80;
+
+function init(preview_url) {
+	//picture = document.querySelector( 'picture' );
+
+    //picture.src = preview_url;			
+
+	//canvas = document.querySelector( 'canvas' );
+	canvas = document.getElementById("360-canvas");
+					
+	vertex_shader = document.getElementById('vs').textContent;
+	fragment_shader = document.getElementById('fs').textContent;				
+	
+	// Initialise WebGL
+	/* Commented by me
+	try {
+		gl = canvas.getContext( 'experimental-webgl' );
+	} catch( error ) { }
+
+	if ( !gl ) {
+		throw "cannot create webgl context";
+	}*/
+
+	// Create Vertex buffer (2 triangles)
+	buffer = gl.createBuffer();
+	gl.bindBuffer( gl.ARRAY_BUFFER, buffer );
+	gl.bufferData( gl.ARRAY_BUFFER, new Float32Array( [ - 1.0, - 1.0, 1.0, - 1.0, - 1.0, 1.0, 1.0, - 1.0, 1.0, 1.0, - 1.0, 1.0 ] ), gl.STATIC_DRAW );
+
+	// Create texture for picture
+	createTexture( preview_url );
+
+	// Create Program
+	//currentProgram = createProgram( vertex_shader, fragment_shader );
+
+	handleResize();
+	window.addEventListener( 'resize', handleResize, false );
+	
+	// Initialise interaction
+	canvas.onmousedown = handleMouseDown;
+	document.onmouseup = handleMouseUp;
+	canvas.onmousemove = handleMouseMove;
+	canvas.ondblclick = handleDoubleClick;				
+}
+
+
+function animate() {
+	handleMouse();
+	render();
+	requestAnimationFrame( animate );
+}
+
+
+function render() {
+	if ( !currentProgram ) return;
+
+	parameters.time = new Date().getTime() - parameters.start_time;
+
+	gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
+
+	// Load program into GPU
+	gl.useProgram( currentProgram );
+	
+	gl.bindTexture(gl.TEXTURE_2D, picture_texture);
+
+	// Set values to program variables
+    gl.uniform2f(gl.getUniformLocation(currentProgram, 'resolution'), parameters.screenWidth, parameters.screenHeight);
+    gl.uniform1f(gl.getUniformLocation(currentProgram, 'fov'), 80);
+
+    gl.uniform1f(gl.getUniformLocation(currentProgram, 'yaw'), yaw);        // ao eliminar não dá para mexer para os lados
+	gl.uniform1f( gl.getUniformLocation( currentProgram, 'pitch' ), -pitch );	// ao eliminar não dá para mexer para cima ou para baixo
+
+	// Render geometry
+	gl.bindBuffer( gl.ARRAY_BUFFER, buffer );
+	gl.vertexAttribPointer( vertex_position, 2, gl.FLOAT, false, 0, 0 );
+	gl.enableVertexAttribArray( vertex_position );
+	gl.drawArrays( gl.TRIANGLES, 0, 6 );
+	gl.disableVertexAttribArray( vertex_position );
+}
+
+
+function createShader( src, type ) {
+	var shader = gl.createShader( type );
+
+	gl.shaderSource( shader, src );
+	gl.compileShader( shader );
+
+	if ( !gl.getShaderParameter( shader, gl.COMPILE_STATUS ) ) {
+		alert( ( type == gl.VERTEX_SHADER ? "VERTEX" : "FRAGMENT" ) + " SHADER:\n" + gl.getShaderInfoLog( shader ) );
+		return null;
+	}
+
+	return shader;
+}
+
+
+function createProgram( vertex, fragment ) {
+
+	var program = gl.createProgram();
+
+	var vs = createShader( vertex, gl.VERTEX_SHADER );
+	var fs = createShader( '#ifdef GL_ES\nprecision highp float;\n#endif\n\n' + fragment, gl.FRAGMENT_SHADER );
+
+	if ( vs == null || fs == null ) return null;
+
+	gl.attachShader( program, vs );
+	gl.attachShader( program, fs );
+
+	gl.deleteShader( vs );
+	gl.deleteShader( fs );
+
+	gl.linkProgram( program );
+
+	if ( !gl.getProgramParameter( program, gl.LINK_STATUS ) ) {
+		alert( "ERROR:\n" +
+		"VALIDATE_STATUS: " + gl.getProgramParameter( program, gl.VALIDATE_STATUS ) + "\n" +
+		"ERROR: " + gl.getError() + "\n\n" +
+		"- Vertex Shader -\n" + vertex + "\n\n" +
+		"- Fragment Shader -\n" + fragment );
+
+		return null;
+	}
+
+	return program;
+}
+
+
+function createTexture( image_src ) {
+	picture_texture = gl.createTexture();
+	picture_texture.image = new Image();
+	
+	picture_texture.image.onload = function() {
+		gl.bindTexture(gl.TEXTURE_2D, picture_texture);
+		gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, picture_texture.image);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+		gl.bindTexture(gl.TEXTURE_2D, null);
+	}
+
+	picture_texture.image.src = image_src;
+}
+
+
+
+function handleResize( event ) {
+	//canvas.width = window.innerWidth;
+	//canvas.height = window.innerHeight;
+
+	parameters.screenWidth = canvas.width;
+	parameters.screenHeight = canvas.height;
+
+	gl.viewport( 0, 0, canvas.width, canvas.height );
+}
+
+
+function handleDoubleClick(event) {
+	var isInFullScreen = (document.fullScreen || document.mozFullScreen || document.webkitIsFullScreen);
+	if(!isInFullScreen) {
+		if (canvas.requestFullscreen) {
+			canvas.requestFullscreen();
+		} else if (canvas.mozRequestFullScreen) {
+			canvas.mozRequestFullScreen();
+		} else if (canvas.webkitRequestFullscreen) {
+			canvas.webkitRequestFullscreen();
+		}			
+	} else {
+		if(document.cancelFullScreen) {
+			document.cancelFullScreen();
+		} else if(document.mozCancelFullScreen) {
+			document.mozCancelFullScreen();
+		} else if(document.webkitCancelFullScreen) {
+			document.webkitCancelFullScreen();
+		}
+	}
+}
+
+
+function handleMouseDown(event) {
+	startDragX = event.clientX;
+	startDragY = event.clientY;
+
+	currentDragX = event.clientX;
+	currentDragY = event.clientY;
+	currentlyDragging = true;
+	return false;
+}
+
+
+function handleMouseUp(event) {
+	currentlyDragging = false;
+	return false;
+}
+
+
+function handleMouseMove(event) {
+	if(currentlyDragging) {
+		currentDragX = event.clientX;
+		currentDragY = event.clientY;
+	}
+	return false;
+}
+
+
+function handleMouse() {
+	if (currentlyDragging) {
+		xSpeed = (currentDragX - startDragX) / 100;
+		ySpeed = (currentDragY - startDragY) / 100;	
+	}else {
+		xSpeed *= 0.8;
+		ySpeed *= 0.8;
+	}
+	
+	yaw += xSpeed;
+	pitch += ySpeed;
+}
+
+function run_panoramic_view() {
+	init("Photos/DMAT.jpg");
+	animate();
+}

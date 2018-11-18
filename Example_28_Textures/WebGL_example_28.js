@@ -276,9 +276,7 @@ function initTexture() {
 // Handling the Buffers
 
 function initBuffers() {	
-	
 	// Coordinates
-		
 	triangleVertexPositionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexPositionBuffer);
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
@@ -286,7 +284,6 @@ function initBuffers() {
 	triangleVertexPositionBuffer.numItems = vertices.length / 3;			
 
 	// Textures
-		
     triangleVertexTextureCoordBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexTextureCoordBuffer);
  	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoords), gl.STATIC_DRAW);
@@ -294,13 +291,13 @@ function initBuffers() {
     triangleVertexTextureCoordBuffer.numItems = 24;			
 
 	// Vertex indices
-	
     triangleVertexIndexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, triangleVertexIndexBuffer);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(cubeVertexIndices), gl.STATIC_DRAW);
     triangleVertexIndexBuffer.itemSize = 1;
     triangleVertexIndexBuffer.numItems = 36;
 }
+
 function initBuffersMap() {
     // Coordinates
     cubeVertexPositionBuffer = gl.createBuffer();
@@ -333,49 +330,32 @@ function drawModel( angleXX, angleYY, angleZZ,
 					tx, ty, tz,
 					mvMatrix,
 					primitiveType ) {
-
     // Pay attention to transformation order !!
-    
 	mvMatrix = mult( mvMatrix, translationMatrix( tx, ty, tz ) );
-						 
 	mvMatrix = mult( mvMatrix, rotationZZMatrix( angleZZ ) );
-	
 	mvMatrix = mult( mvMatrix, rotationYYMatrix( angleYY ) );
-	
 	mvMatrix = mult( mvMatrix, rotationXXMatrix( angleXX ) );
-	
 	mvMatrix = mult( mvMatrix, scalingMatrix( sx, sy, sz ) );
 						 
 	// Passing the Model View Matrix to apply the current transformation
-	
 	var mvUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
-	
 	gl.uniformMatrix4fv(mvUniform, false, new Float32Array(flatten(mvMatrix)));
 
     // Passing the buffers
-    	
     gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexPositionBuffer);
-    
     gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, triangleVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
 	// NEW --- Textures
-	
     gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexTextureCoordBuffer);
     gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, triangleVertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
-
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, webGLTexture); 
-        
     gl.uniform1i(shaderProgram.samplerUniform, 0);
     
     // The vertex indices
-    
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, triangleVertexIndexBuffer);
-
 	// Drawing the triangles --- NEW --- DRAWING ELEMENTS 
-	
     gl.drawElements(gl.TRIANGLES, 18, gl.UNSIGNED_SHORT, 0);	
-
     // Texture 2
     gl.bindTexture(gl.TEXTURE_2D, webGLTexture2); 
     gl.drawElements(gl.TRIANGLES, 24, gl.UNSIGNED_SHORT, 24);	
@@ -487,32 +467,32 @@ function drawScene() {
 	// Instance 1 --- RIGHT TOP
 	
 	drawModel( -angleXX, angleYY, angleZZ, 
-        sx * 0.5, sy * 0.5, sz * 0.5,
-	           tx + 0.5, ty + 0.5, tz,
+        sx * 0.25, sy * 0.25, sz * 0.25,
+	           tx - 0.15, ty + 0.28, tz,
 	           mvMatrix,
 	           primitiveType );
 	           	       
 	// Instance 2 --- LEFT TOP
 	
 	drawModel( -angleXX, -angleYY, -angleZZ,  // CW rotations
-        sx * 0.5, sy * 0.5, sz * 0.5,
-	           tx - 0.5, ty + 0.5, tz,
+        sx * 0.25, sy * 0.25, sz * 0.25,
+	           tx - 0.01, ty + 0.35, tz,
 	           mvMatrix,
 	           primitiveType );
 	           
 	// Instance 3 --- LEFT BOTTOM
 	
 	drawModel( angleXX, angleYY, -angleZZ, 
-        sx * 0.5, sy * 0.5, sz * 0.5,
-	           tx + 0.5, ty - 0.5, tz,
+        sx * 0.25, sy * 0.25, sz * 0.25,
+	           tx - 0.1, ty + 0.18, tz,
 	           mvMatrix,
 	           primitiveType );
 	           	       
 	// Instance 4 --- RIGHT BOTTOM
 	
 	drawModel( angleXX, -angleYY, angleZZ,  // CW rotations
-        sx * 0.5, sy * 0.5, sz * 0.5,
-	           tx - 0.5, ty - 0.5, tz,
+        sx * 0.25, sy * 0.25, sz * 0.25,
+	           tx - 0.2, ty + 0.1, tz,
 	           mvMatrix,
         primitiveType);
 
@@ -638,8 +618,7 @@ function handleKeys() {
 // Handling mouse events
 
 // Adapted from www.learningwebgl.com
-
-
+/*
 var mouseDown = false;
 
 var lastMouseX = null;
@@ -684,25 +663,18 @@ function handleMouseMove(event) {
     lastMouseX = newX
     
     lastMouseY = newY;
-  }
+  }*/
 //----------------------------------------------------------------------------
 
 // Timer
 
 function tick() {
-	
 	requestAnimFrame(tick);
-	
 	// NEW --- Processing keyboard events 
-	
 	handleKeys();
-	
     drawScene();
-	
 	animate();
 }
-
-
 
 
 //----------------------------------------------------------------------------
@@ -717,17 +689,16 @@ function outputInfos(){
 //----------------------------------------------------------------------------
 
 function setEventListeners( canvas ){
-	
 	// NEW ---Handling the mouse
 	
 	// From learningwebgl.com
-
+/*
     canvas.onmousedown = handleMouseDown;
     
     document.onmouseup = handleMouseUp;
     
     document.onmousemove = handleMouseMove;
-    
+    */
     // NEW ---Handling the keyboard
 	
 	// From learningwebgl.com
@@ -745,190 +716,22 @@ function setEventListeners( canvas ){
 	document.onkeydown = handleKeyDown;
     
     document.onkeyup = handleKeyUp;
-	
-	// Dropdown list
-	
-	var projection = document.getElementById("projection-selection");
-	
-	projection.addEventListener("click", function(){
-				
-		// Getting the selection
-		
-		var p = projection.selectedIndex;
-				
-		switch(p){
-			
-			case 0 : projectionType = 0;
-				break;
-			
-			case 1 : projectionType = 1;
-				break;
-		}  	
-	});      
-
-
-	// Button events
-	
-	document.getElementById("XX-on-off-button").onclick = function(){
-		
-		// Switching on / off
-		
-		if( rotationXX_ON ) {
-			
-			rotationXX_ON = 0;
-		}
-		else {
-			
-			rotationXX_ON = 1;
-		}  
-	};
-
-	document.getElementById("XX-direction-button").onclick = function(){
-		
-		// Switching the direction
-		
-		if( rotationXX_DIR == 1 ) {
-			
-			rotationXX_DIR = -1;
-		}
-		else {
-			
-			rotationXX_DIR = 1;
-		}  
-	};      
-
-	document.getElementById("XX-slower-button").onclick = function(){
-		
-		rotationXX_SPEED *= 0.75;  
-	};      
-
-	document.getElementById("XX-faster-button").onclick = function(){
-		
-		rotationXX_SPEED *= 1.25;  
-	};      
-
-	document.getElementById("YY-on-off-button").onclick = function(){
-		
-		// Switching on / off
-		
-		if( rotationYY_ON ) {
-			
-			rotationYY_ON = 0;
-		}
-		else {
-			
-			rotationYY_ON = 1;
-		}  
-	};
-
-	document.getElementById("YY-direction-button").onclick = function(){
-		
-		// Switching the direction
-		
-		if( rotationYY_DIR == 1 ) {
-			
-			rotationYY_DIR = -1;
-		}
-		else {
-			
-			rotationYY_DIR = 1;
-		}  
-	};      
-
-	document.getElementById("YY-slower-button").onclick = function(){
-		
-		rotationYY_SPEED *= 0.75;  
-	};      
-
-	document.getElementById("YY-faster-button").onclick = function(){
-		
-		rotationYY_SPEED *= 1.25;  
-	};      
-
-	document.getElementById("ZZ-on-off-button").onclick = function(){
-		
-		// Switching on / off
-		
-		if( rotationZZ_ON ) {
-			
-			rotationZZ_ON = 0;
-		}
-		else {
-			
-			rotationZZ_ON = 1;
-		}  
-	};
-
-	document.getElementById("ZZ-direction-button").onclick = function(){
-		
-		// Switching the direction
-		
-		if( rotationZZ_DIR == 1 ) {
-			
-			rotationZZ_DIR = -1;
-		}
-		else {
-			
-			rotationZZ_DIR = 1;
-		}  
-	};      
-
-	document.getElementById("ZZ-slower-button").onclick = function(){
-		
-		rotationZZ_SPEED *= 0.75;  
-	};      
-
-	document.getElementById("ZZ-faster-button").onclick = function(){
-		
-		rotationZZ_SPEED *= 1.25;  
-	};      
-
-	document.getElementById("reset-button").onclick = function(){
-		
-		// The initial values
-
-		tx = 0.0;
-
-		ty = 0.0;
-
-		tz = 0.0;
-
-		angleXX = 0.0;
-
-		angleYY = 0.0;
-
-		angleZZ = 0.0;
-
-		sx = 0.25;
-
-		sy = 0.25;
-
-		sz = 0.25;
-		
-		rotationXX_ON = 0;
-		
-		rotationXX_DIR = 1;
-		
-		rotationXX_SPEED = 1;
-
-		rotationYY_ON = 0;
-		
-		rotationYY_DIR = 1;
-		
-		rotationYY_SPEED = 1;
-
-		rotationZZ_ON = 0;
-		
-		rotationZZ_DIR = 1;
-		
-		rotationZZ_SPEED = 1;
-	};      
 }
 
-//----------------------------------------------------------------------------
-//
-// WebGL Initialization
-//
+function onDown() {
+	cx = event.pageX;
+	cy = event.pageY;
+	if(cx > 0 && cy > 0) {
+		//window.location.href = "Picture Sphere.html";
+		run_panoramic_view();
+	}
+}
+
+function getClickCanvas() {
+	var cnvs = document.getElementById('my-canvas');
+	//var context = cnvs.getContext('2d');
+	cnvs.addEventListener('mousedown',onDown,false);
+}
 
 function initWebGL( canvas ) {
 	try {
@@ -963,24 +766,19 @@ function initWebGL( canvas ) {
 //----------------------------------------------------------------------------
 
 function runWebGL() {
-	
 	var canvas = document.getElementById("my-canvas");
-	
 	initWebGL( canvas );
-
 	shaderProgram = initShaders( gl );
-	
 	setEventListeners( canvas );
-	
+	moveToSphericalSurface( vertices );
+	gl.enable( gl.CULL_FACE );
+	gl.enable( gl.DEPTH_TEST );
     initBuffers();
-
     initBuffersMap();
-	
 	initTexture();
-	
 	tick();		// A timer controls the rendering / animation    
-
 	outputInfos();
+	getClickCanvas();
 }
 
 
