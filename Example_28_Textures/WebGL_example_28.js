@@ -285,6 +285,9 @@ var textureCoordsMap = [
 var cubeVertexIndicesMap = [
     0, 1, 2, 0, 2, 3,    // Front face
 ];
+
+var display_department = '';
+var turn = 0;
          
          
 //----------------------------------------------------------------------------
@@ -492,36 +495,16 @@ function drawScene() {
 	
 	var mvMatrix = mat4();
 	
-	// Clearing with the background color
-	
 	gl.clear(gl.COLOR_BUFFER_BIT);
 	
-	// NEW --- Computing the Projection Matrix
-	
 	if( projectionType == 0 ) {
-		
-		// For now, the default orthogonal view volume
-		
 		pMatrix = ortho( -1.0, 1.0, -1.0, 1.0, -1.0, 1.0 );
-		
 		tz = 0;
-		
-		// TO BE DONE !
-		
-		// Allow the user to control the size of the view volume
 	}
 	else {	
-
-		// A standard view volume.
-		
-		// Viewer is at (0,0,0)
-		
-		// Ensure that the model is "inside" the view volume
 		
 		pMatrix = perspective( 45, 1, 0.05, 10 );
-		
 		tz = -2.25;
-
 	}
 	
 	// Passing the Projection Matrix to apply the current projection
@@ -529,57 +512,51 @@ function drawScene() {
 	var pUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
 	
 	gl.uniformMatrix4fv(pUniform, false, new Float32Array(flatten(pMatrix)));
-	
-	// NEW --- Instantianting the same model more than once !!
-	
-	// And with diferent transformation parameters !!
-	
-	// Call the drawModel function !!
 
-    // Instance --- Departamento de matemática
+    if(display_department.includes("DMAT")){
+        // Instance --- Departamento de matemática
+        drawModel(-angleXX, -angleYY, -angleZZ,  // CW rotations
+            sx * 0.1, sy * 0.1, sz * 0.1,
+            tx + 0.1, ty + 0.30, tz,
+            mvMatrix,
+            primitiveType);
+    }
 
-    drawModel(-angleXX, -angleYY, -angleZZ,  // CW rotations
-        sx * 0.1, sy * 0.1, sz * 0.1,
-        tx + 0.1, ty + 0.30, tz,
-        mvMatrix,
-        primitiveType);
+    if(display_department.includes("DCPT")){
+        // Instance --- Departamento Território
+        drawModel(-angleXX, -angleYY, -angleZZ,  // CW rotations
+            sx * 0.11, sy * 0.11, sz * 0.11,
+            tx + 0.07, ty + 0.25, tz,
+            mvMatrix,
+            primitiveType);
+    }
 
-    // Instance --- Departamento Território
+    if(display_department.includes("DMEC")){
+    	// Instance --- Departamento mecanica
+    	drawModel( -angleXX, angleYY, angleZZ, 
+            sx * 0.12, sy * 0.12, sz * 0.12,
+    	           tx + 0.03, ty + 0.20, tz,
+    	           mvMatrix,
+    	           primitiveType );
+    }
+	
+    if(display_department.includes("DEG")){
+        // Instance --- Departamento ???
+        drawModel( angleXX, angleYY, -angleZZ, 
+            sx * 0.13, sy * 0.13, sz * 0.13,
+                   tx - 0.02, ty + 0.12, tz,
+                   mvMatrix,
+                   primitiveType );
+    }
 
-    drawModel(-angleXX, -angleYY, -angleZZ,  // CW rotations
-        sx * 0.11, sy * 0.11, sz * 0.11,
-        tx + 0.07, ty + 0.25, tz,
-        mvMatrix,
-        primitiveType);
-
-	// Instance --- Departamento mecanica
-	
-	drawModel( -angleXX, angleYY, angleZZ, 
-        sx * 0.12, sy * 0.12, sz * 0.12,
-	           tx + 0.03, ty + 0.20, tz,
-	           mvMatrix,
-	           primitiveType );
-	           	       
-	
-	           
-	// Instance --- Departamento ???
-	
-	drawModel( angleXX, angleYY, -angleZZ, 
-        sx * 0.13, sy * 0.13, sz * 0.13,
-	           tx - 0.02, ty + 0.12, tz,
-	           mvMatrix,
-	           primitiveType );
-	           	       
-	// Instance --- Departamento civil ???
-	
-	drawModel( angleXX, -angleYY, angleZZ,  // CW rotations
+    // Instance --- civil ???
+    drawModel( angleXX, -angleYY, angleZZ,  // CW rotations
         sx * 0.14, sy * 0.14, sz * 0.14,
-	           tx - 0.08, ty + 0.04, tz,
-	           mvMatrix,
+               tx - 0.08, ty + 0.04, tz,
+               mvMatrix,
         primitiveType);
 
     // Instance --- Departamento ???
-
     drawModel(angleXX, -angleYY, angleZZ,  // CW rotations
         sx * 0.15, sy * 0.15, sz * 0.15,
         tx - 0.16, ty - 0.08, tz,
@@ -853,9 +830,30 @@ function initWebGL( canvas ) {
 	}        
 }
 
+function getValue(){
+    if(turn==1){
+        display_department = '';
+    }
+    var checks = document.getElementsByClassName('checks');
+    for ( i = 0; i < 4; i++) {
+        if ( checks[i].checked === true ) {
+            display_department += checks[i].value + " ";
+        }
+    }
+    if(turn==0){
+        turn = 1;
+    }
+}
+
 //----------------------------------------------------------------------------
 
 function runWebGL() {
+    var checks = document.getElementsByClassName('checks');
+    for ( i = 0; i < 4; i++) {
+        checks[i].checked = true;
+        display_department += checks[i].value + " ";
+    }
+
 	var canvas = document.getElementById("my-canvas");
 	initWebGL( canvas );
 	shaderProgram = initShaders( gl );
