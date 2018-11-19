@@ -288,6 +288,7 @@ var cubeVertexIndicesMap = [
 
 var display_department = '';
 var turn = 0;
+var set = 0;
          
          
 //----------------------------------------------------------------------------
@@ -741,6 +742,10 @@ function tick() {
 	handleKeys();
     drawScene();
 	animate();
+    if(set){
+        handleMouse();
+        render();
+    }
 }
 
 
@@ -770,6 +775,8 @@ function setEventListeners( canvas ){
 	
 	// From learningwebgl.com
 
+    
+
     function handleKeyDown(event) {
 		
         currentlyPressedKeys[event.keyCode] = true;
@@ -786,17 +793,21 @@ function setEventListeners( canvas ){
 }
 
 function onDown() {
-	cx = event.pageX;
-	cy = event.pageY;
-	if(cx > 0 && cy > 0) {
+    var cnvs = document.getElementById('my-canvas');
+    var posy = event.pageY - cnvs.offsetTop;
+    var posx = event.pageX - cnvs.offsetLeft;
+	if(posx > 0 && posy > 0) {
 		//window.location.href = "Picture Sphere.html";
+        set = 1;
 		run_panoramic_view();
 	}
+    str = posx+", "+posy;
+    //alert(str);
 }
 
 function getClickCanvas() {
 	var cnvs = document.getElementById('my-canvas');
-	//var context = cnvs.getContext('2d');
+	var context = cnvs.getContext('2d');
 	cnvs.addEventListener('mousedown',onDown,false);
 }
 

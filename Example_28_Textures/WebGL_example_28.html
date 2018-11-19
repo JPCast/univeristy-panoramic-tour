@@ -1,23 +1,16 @@
 <!DOCTYPE html>
-
 <html>
-
 <head>
-
-    <!--
-
-    WebGL_example_28.html
-
-    Applying a texture
-
-    J. Madeira - November 2015
-
-    -->
 
     <title>University Panorama</title>
 
     <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
     <link rel="stylesheet" type="text/css" href="bootstrap-4.0.0-dist/css/bootstrap.css" />
+    <link rel="stylesheet" type="text/css" href="bootstrap-4.0.0-dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="bootstrap-4.0.0-dist/css/bootstrap-grid.css" />
+    <link rel="stylesheet" type="text/css" href="bootstrap-4.0.0-dist/css/bootstrap-grid.min.css" />
+    <link rel="stylesheet" type="text/css" href="bootstrap-4.0.0-dist/css/bootstrap-reboot.css" />
+    <link rel="stylesheet" type="text/css" href="bootstrap-4.0.0-dist/css/bootstrap-reboot.min.css" />
     <style>
     .leftcol {
 	    width:300px;
@@ -26,71 +19,92 @@
  	}
  	</style>
 
+ 	<style>
+		body {
+		    font-family: "Lato", sans-serif;
+		    background-color: #0F1F1F;
+		    color: #FFF;
+		}
 
-    <!--
+		.sidenav {
+		    height: 100%;
+		    width: 0;
+		    position: fixed;
+		    z-index: 1;
+		    top: 0;
+		    left: 0;
+		    background-color: #111;
+		    overflow-x: hidden;
+		    transition: 0.5s;
+		    padding-top: 60px;
+		}
 
-    The vertex and fragment shaders.
+		.sidenav a {
+		    padding: 8px 8px 8px 32px;
+		    text-decoration: none;
+		    font-size: 25px;
+		    color: #FFFFFF;
+		    display: block;
+		    transition: 0.3s;
+		}
 
-    -->
+		.sidenav a:hover {
+		    color: #f1f1f1;
+		}
+
+		.sidenav .closebtn {
+		    position: absolute;
+		    top: 0;
+		    right: 25px;
+		    font-size: 36px;
+		    margin-left: 50px;
+		}
+
+		@media screen and (max-height: 450px) {
+		  .sidenav {padding-top: 15px;}
+		  .sidenav a {font-size: 18px;}
+		}
+	</style>
+
 
     <script id="shader-vs" type="x-shader/x-vertex">
-
         attribute vec3 aVertexPosition;
-
         attribute vec3 aVertexColor;
-
         attribute vec2 aTextureCoord;
-
         uniform mat4 uMVMatrix;
-
         uniform mat4 uPMatrix;
-
         varying vec2 vTextureCoord;
-
         varying vec4 vertexColor;
-
         void main(void) {
-
-        // To allow seeing the points drawn
-        gl_PointSize = 5.0;
-
-        // Just converting the (x,y,z) vertices to Homogeneous Coord.
-        // And multiplying by the Projection and the Model-View matrix
-        gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
-
-        // For the fragment shader
-        vTextureCoord = aTextureCoord;
-
-        // Converting the RGB color value to RGBA
-        vertexColor = vec4(aVertexColor, 1.0);
+	        // To allow seeing the points drawn
+	        gl_PointSize = 5.0;
+	        // Just converting the (x,y,z) vertices to Homogeneous Coord.
+	        // And multiplying by the Projection and the Model-View matrix
+	        gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+	        // For the fragment shader
+	        vTextureCoord = aTextureCoord;
+	        // Converting the RGB color value to RGBA
+	        vertexColor = vec4(aVertexColor, 1.0);
         }
     </script>
 
     <script id="shader-fs" type="x-shader/x-fragment">
-
         precision mediump float;
-
         varying vec2 vTextureCoord;
-
         varying vec4 vertexColor;
-
         uniform sampler2D uSampler;
-
         uniform float isTexture;
-
         void main(void) {
-        if(isTexture==1.0){
-        gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
-        }else{
-        gl_FragColor = vertexColor;
-        }
-        }
-
+	        if(isTexture==1.0){
+	        	gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
+	        }else{
+	        	gl_FragColor = vertexColor;
+	        }
+    	}
     </script>
 
     <script id="vs" type="x-shader/vertex"> 
 		attribute vec3 position;
-
 		void main() {
 			gl_Position = vec4( position, 1.0 );
 		}
@@ -137,29 +151,22 @@
 
     <!-- The JS files -->
     <!-- Some useful functions for browser compatibility -->
-
     <script type="text/javascript" src="webgl-utils.js"></script>
 
     <!-- Handling vectors and matrices -->
-
     <script type="text/javascript" src="maths.js"></script>
 
 	<!-- Processing triangle mesh models -->
-
 	<script type="text/javascript" src="models.js"></script>
-
 	<script type="text/javascript" src="spheres.js"></script>
 
     <!-- WebGL code -->
-
     <script type="text/javascript" src="initShaders.js"></script>
-
     <script type="text/javascript" src="WebGL_example_28.js"></script>
-
 </head>
 
 <body onload="runWebGL();">
-
+<!--
 	<div class="leftcol" style="text-align: center">
 		<p></p>
 	  <h4>Escolha os departamentos que quer ver:</h4>
@@ -169,16 +176,39 @@
 	  <input type="checkbox" class="checks" value="DEG" checked>Departamento de Engenharia Civil<br>
 	  <a href="#" onclick="getValue();return false;">Submeter</a>
 	</div>
+-->
+	<div id="mySidenav" class="sidenav">
+	  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+	  <input type="checkbox" class="checks" value="DMAT" checked>Departamento de Matematica<br>
+	  <input type="checkbox" class="checks" value="DCPT" checked>Departamento de Ciencias Sociais<br>
+	  <input type="checkbox" class="checks" value="DMEC" checked>Departamento de Engenharia Mecanica<br>
+	  <input type="checkbox" class="checks" value="DEG" checked>Departamento de Engenharia Civil<br>
+	  <a href="#" onclick="getValue();return false;">Submeter</a>
+	</div>
+
+	
+	<h4>Escolha os departamentos que quer ver:</h4>
+	<span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; open</span>
+
+	<script>
+	function openNav() {
+	    document.getElementById("mySidenav").style.width = "250px";
+	}
+
+	function closeNav() {
+	    document.getElementById("mySidenav").style.width = "0";
+	}
+	</script>
 
 	<div style="text-align: center">
 		
 		<h3>Mapa da Universidade</h3>
 		<canvas id="my-canvas" width="1150" height="650"></canvas>
-
+		
 		<p> Vista 360 </p>
-		<canvas id="360-canvas" style="border:10px solid #000000;" width="1150" height="650"></canvas>
+		<canvas id="360-canvas" style="border:10px solid #FFFFFF;" width="1150" height="650"></canvas>
 		<picture></picture>
-				
+			
 		
 				
 	</div>

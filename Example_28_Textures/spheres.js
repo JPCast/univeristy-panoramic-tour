@@ -54,14 +54,6 @@ function init(preview_url) {
 	canvas_360.ondblclick = handleDoubleClick;				
 }
 
-
-function animate() {
-	handleMouse();
-	render();
-	requestAnimationFrame( animate );
-}
-
-
 function render() {
 	if ( !currentProgram ) return;
 
@@ -158,8 +150,8 @@ function createTexture( image_src ) {
 
 function handleResize( event ) {
 	//The next two lines resize the canvas_360 to the whole windows size
-	//canvas_360.width = window.innerWidth;
-	//canvas_360.height = window.innerHeight;
+	canvas_360.width = window.innerWidth;
+	canvas_360.height = window.innerHeight;
 
 	parameters.screenWidth = canvas_360.width;
 	parameters.screenHeight = canvas_360.height;
@@ -230,11 +222,5 @@ function handleMouse() {
 }
 
 function run_panoramic_view() {
-	/*if(number == null){
-		window.location.href = "Picture Sphere.html";
-	}
-	else {*/
-	init("Photos/DMAT.jpg"); //names have changed meanwhile
-	animate();
-	//}
+	init("Photos/DMAT-11(2).jpg"); //names have changed meanwhile
 }
