@@ -14,10 +14,7 @@ startDragX = 0, startDragY = 0,
 xSpeed = 0, ySpeed = 0,
 yaw = 0, pitch = 0, fov = 80;
 
-function init(preview_url) {
-	//picture = document.querySelector( 'picture' );
-
-    //picture.src = preview_url;			
+function run_panoramic_view(photo)  {
 
 	canvas_360 = document.getElementById("360-canvas");
 					
@@ -39,7 +36,7 @@ function init(preview_url) {
 	gl_360.bufferData( gl_360.ARRAY_BUFFER, new Float32Array( [ - 1.0, - 1.0, 1.0, - 1.0, - 1.0, 1.0, 1.0, - 1.0, 1.0, 1.0, - 1.0, 1.0 ] ), gl_360.STATIC_DRAW );
 
 	// Create texture for picture
-	createTexture( preview_url );
+	createTexture( photo );
 
 	// Create Program
 	currentProgram = createProgram( vertex_shader, fragment_shader );
@@ -223,8 +220,4 @@ function handleMouse() {
 	
 	yaw += xSpeed;
 	pitch += ySpeed;
-}
-
-function run_panoramic_view(photo) {
-	init(photo);
 }

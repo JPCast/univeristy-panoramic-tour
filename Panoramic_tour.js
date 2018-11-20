@@ -686,22 +686,18 @@ function onDown() {
     var posy = event.pageY - cnvs.offsetTop;
     var posx = event.pageX - cnvs.offsetLeft;
 	if((posx > 623 && posx < 635) && (posy > 225 && posy < 619)) {
-		//window.location.href = "Picture Sphere.html";
         set = 1;
 		run_panoramic_view("Photos/DMAT-11(2).jpg");
 	}
     else if((posx > 606 && posx < 622) && (posy > 236 && posy < 645)) {
-        //window.location.href = "Picture Sphere.html";
         set = 1;
         run_panoramic_view("Photos/DCPT-12.jpg");
     }
     else if((posx > 577 && posx < 603) && (posy > 253 && posy < 264)) {
-        //window.location.href = "Picture Sphere.html";
         set = 1;
         run_panoramic_view("Photos/DMEC-22.jpg");
     }
     else if((posx > 549 && posx < 579) && (posy > 279 && posy < 291)) {
-        //window.location.href = "Picture Sphere.html";
         set = 1;
         run_panoramic_view("Photos/DEC-28.jpg");
     }
