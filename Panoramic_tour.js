@@ -334,19 +334,21 @@ function initTexture() {
 
 // Handling the Buffers
 
-function initBuffers() {	
+function initBuffersButtonsSpheres() {
+    gl.useProgram(shaderPrograms['ButtonsSpheres']);
 	// Coordinates
 	triangleVertexPositionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexPositionBuffer);
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-	triangleVertexPositionBuffer.itemSize = 3;
+
+    triangleVertexPositionBuffer.itemSize = 3;
 	triangleVertexPositionBuffer.numItems = vertices.length / 3;			
 
     // Colors
-
     triangleVertexColorBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexColorBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
+
     triangleVertexColorBuffer.itemSize = 3;
     triangleVertexColorBuffer.numItems = vertices.length / 3;
 
@@ -354,11 +356,13 @@ function initBuffers() {
     triangleVertexIndexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, triangleVertexIndexBuffer);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(cubeVertexIndices), gl.STATIC_DRAW);
+
     triangleVertexIndexBuffer.itemSize = 1;
     triangleVertexIndexBuffer.numItems = 36;
 }
 
 function initBuffersMap() {
+    gl.useProgram(shaderPrograms['Map']);
     // Coordinates
     cubeVertexPositionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexPositionBuffer);
@@ -385,10 +389,11 @@ function initBuffersMap() {
 
 //  Drawing the model
 
-function drawModel( angleXX, angleYY, angleZZ, 
+function drawModelButtonsSpheres( angleXX, angleYY, angleZZ, 
 					sx, sy, sz,
 					tx, ty, tz,
-					mvMatrix,
+                    mvMatrix, 
+                    pMatrix,
 					primitiveType ) {
     // Pay attention to transformation order !!
 	mvMatrix = mult( mvMatrix, translationMatrix( tx, ty, tz ) );
@@ -396,21 +401,24 @@ function drawModel( angleXX, angleYY, angleZZ,
 	mvMatrix = mult( mvMatrix, rotationYYMatrix( angleYY ) );
 	mvMatrix = mult( mvMatrix, rotationXXMatrix( angleXX ) );
 	mvMatrix = mult( mvMatrix, scalingMatrix( sx, sy, sz ) );
-						 
+
+    gl.useProgram(shaderPrograms['ButtonsSpheres']);
 	// Passing the Model View Matrix to apply the current transformation
-	var mvUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
-	gl.uniformMatrix4fv(mvUniform, false, new Float32Array(flatten(mvMatrix)));
+    var mvUniform = gl.getUniformLocation(shaderPrograms['ButtonsSpheres'], "uMVMatrix");
+    gl.uniformMatrix4fv(mvUniform, false, new Float32Array(flatten(mvMatrix)));
+
+    // Passing the Projection Matrix to apply the current projection
+    var pUniform = gl.getUniformLocation(shaderPrograms['ButtonsSpheres'], "uPMatrix");
+    
+    gl.uniformMatrix4fv(pUniform, false, new Float32Array(flatten(pMatrix)));
 
     // Passing the buffers
     gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexPositionBuffer);
-    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, triangleVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+    gl.vertexAttribPointer(shaderPrograms['ButtonsSpheres'].vertexPositionAttribute, triangleVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
     //Color
     gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexColorBuffer);
-    gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, triangleVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
-
-    //Texture or color
-    gl.uniform1f(shaderProgram.isTexture, 0);
+    gl.vertexAttribPointer(shaderPrograms['ButtonsSpheres'].vertexColorAttribute, triangleVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
     // The vertex indices
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, triangleVertexIndexBuffer);
@@ -423,6 +431,7 @@ function drawModelMap(angleXX, angleYY, angleZZ,
     sx, sy, sz,
     tx, ty, tz,
     mvMatrix,
+    pMatrix,
     primitiveType) {
 
     // Pay attention to transformation order !!
@@ -437,37 +446,31 @@ function drawModelMap(angleXX, angleYY, angleZZ,
 
     mvMatrix = mult(mvMatrix, scalingMatrix(sx, sy, sz));
 
+    gl.useProgram(shaderPrograms['Map']);
+
     // Passing the Model View Matrix to apply the current transformation
-
-    var mvUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
-
+    var mvUniform = gl.getUniformLocation(shaderPrograms['Map'], "uMVMatrix");
     gl.uniformMatrix4fv(mvUniform, false, new Float32Array(flatten(mvMatrix)));
 
+    // Passing the Projection Matrix to apply the current projection
+    var pUniform = gl.getUniformLocation(shaderPrograms['Map'], "uPMatrix");
+    gl.uniformMatrix4fv(pUniform, false, new Float32Array(flatten(pMatrix)));
+
     // Passing the buffers
-
     gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexPositionBuffer);
-
-    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, cubeVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+    gl.vertexAttribPointer(shaderPrograms['Map'].vertexPositionAttribute, cubeVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
     // NEW --- Textures
-
     gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexTextureCoordBuffer);
-    gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, cubeVertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
-
+    gl.vertexAttribPointer(shaderPrograms['Map'].textureCoordAttribute, cubeVertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, webGLTexture3);
-
-    gl.uniform1i(shaderProgram.samplerUniform, 0);
-
-    //Texture or color
-    gl.uniform1f(shaderProgram.isTexture, 1);
+    gl.uniform1i(shaderPrograms['Map'].samplerUniform, 0);
 
     // The vertex indices
-
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeVertexIndexBuffer);
 
     // Drawing the triangles --- NEW --- DRAWING ELEMENTS 
-
     gl.drawElements(gl.TRIANGLES, cubeVertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
 }
 
@@ -492,61 +495,61 @@ function drawScene() {
 		pMatrix = perspective( 45, 1, 0.05, 10 );
 		tz = -2.25;
 	}
-	
-	// Passing the Projection Matrix to apply the current projection
-	
-	var pUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
-	
-	gl.uniformMatrix4fv(pUniform, false, new Float32Array(flatten(pMatrix)));
 
     if(display_department.includes("DMAT")){
         // Instance --- Departamento de matemática
-        drawModel(-angleXX, -angleYY, -angleZZ,  // CW rotations
+        drawModelButtonsSpheres(-angleXX, -angleYY, -angleZZ,  // CW rotations
             sx * 0.1, sy * 0.1, sz * 0.1,
             tx + 0.1, ty + 0.30, tz,
             mvMatrix,
+            pMatrix,
             primitiveType);
     }
 
     if(display_department.includes("DCPT")){
         // Instance --- Departamento Território
-        drawModel(-angleXX, -angleYY, -angleZZ,  // CW rotations
+        drawModelButtonsSpheres(-angleXX, -angleYY, -angleZZ,  // CW rotations
             sx * 0.11, sy * 0.11, sz * 0.11,
             tx + 0.07, ty + 0.25, tz,
             mvMatrix,
+            pMatrix,
             primitiveType);
     }
 
     if(display_department.includes("DMEC")){
     	// Instance --- Departamento mecanica
-    	drawModel( -angleXX, angleYY, angleZZ, 
+    	drawModelButtonsSpheres( -angleXX, angleYY, angleZZ, 
             sx * 0.12, sy * 0.12, sz * 0.12,
     	           tx + 0.03, ty + 0.20, tz,
-    	           mvMatrix,
+            mvMatrix,
+            pMatrix,
     	           primitiveType );
     }
 	
     if(display_department.includes("DEG")){
         // Instance --- Departamento ???
-        drawModel( angleXX, angleYY, -angleZZ, 
+        drawModelButtonsSpheres( angleXX, angleYY, -angleZZ, 
             sx * 0.13, sy * 0.13, sz * 0.13,
                    tx - 0.02, ty + 0.12, tz,
-                   mvMatrix,
+            mvMatrix,
+            pMatrix,
                    primitiveType );
     }
 
     // Instance --- civil ???
-    drawModel( angleXX, -angleYY, angleZZ,  // CW rotations
+    drawModelButtonsSpheres( angleXX, -angleYY, angleZZ,  // CW rotations
         sx * 0.14, sy * 0.14, sz * 0.14,
                tx - 0.08, ty + 0.04, tz,
-               mvMatrix,
+        mvMatrix,
+               pMatrix,
         primitiveType);
 
     // Instance --- Departamento ???
-    drawModel(angleXX, -angleYY, angleZZ,  // CW rotations
+    drawModelButtonsSpheres(angleXX, -angleYY, angleZZ,  // CW rotations
         sx * 0.15, sy * 0.15, sz * 0.15,
         tx - 0.16, ty - 0.08, tz,
         mvMatrix,
+        pMatrix,
         primitiveType);
 
     // Map
@@ -554,6 +557,7 @@ function drawScene() {
         sx, sy, sz,
         tx, ty, tz,
         mvMatrix,
+        pMatrix,
         primitiveType);
 	           
 }
@@ -681,7 +685,7 @@ function setEventListeners( canvas ){
     };      */
 }
 
-function onDown() {
+function onDown(event) {
     var cnvs = document.getElementById('my-canvas');
     var posy = event.pageY - cnvs.offsetTop;
     var posx = event.pageX - cnvs.offsetLeft;
@@ -762,7 +766,7 @@ function getValue(){
 }
 
 //----------------------------------------------------------------------------
-
+var shaderPrograms = [];
 function runWebGL() {
     var checks = document.getElementsByClassName('checks');
     for ( i = 0; i < 4; i++) {
@@ -772,13 +776,15 @@ function runWebGL() {
 
 	var canvas = document.getElementById("my-canvas");
 	initWebGL( canvas );
-	shaderProgram = initShaders( gl );
+    shaderPrograms['ButtonsSpheres'] = initShadersButtonsSpheres(gl);
+    shaderPrograms['Map'] = initShadersMap(gl);
+
     setEventListeners(canvas);
-    //centroidRefinement(vertices, colors, 10);
+
 	moveToSphericalSurface( vertices );
 	gl.enable( gl.CULL_FACE );
 	gl.enable( gl.DEPTH_TEST );
-    initBuffers();
+    initBuffersButtonsSpheres();
     initBuffersMap();
 	initTexture();
 	tick();		// A timer controls the rendering / animation  

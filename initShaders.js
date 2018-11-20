@@ -50,9 +50,9 @@ function getShader(gl, id) {
 
 // Initializing the shader program
 
-function initShaders( gl ) {
-	var fragmentShader = getShader(gl, "shader-fs");
-	var vertexShader = getShader(gl, "shader-vs");
+function initShadersButtonsSpheres( gl ) {
+    var fragmentShader = getShader(gl, "shader-fs-buttons-spheres");
+    var vertexShader = getShader(gl, "shader-vs-buttons-spheres");
 
 	var shaderProgram = gl.createProgram();
 	gl.attachShader(shaderProgram, vertexShader);
@@ -69,29 +69,45 @@ function initShaders( gl ) {
 	shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
     gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
 
-    /*
-    // Vertex Normals 
-    shaderProgram.vertexNormalAttribute = gl.getAttribLocation(shaderProgram, "vNormal");
-    gl.enableVertexAttribArray(shaderProgram.vertexNormalAttribute);
-    */
-
-	// NEW --- Texture coordinates
-    shaderProgram.textureCoordAttribute = gl.getAttribLocation(shaderProgram, "aTextureCoord");
-    gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
-
     // Colors 
     shaderProgram.vertexColorAttribute = gl.getAttribLocation(shaderProgram, "aVertexColor");
     gl.enableVertexAttribArray(shaderProgram.vertexColorAttribute);
 
+    /*
 	// NEW --- The matrices
     shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
     shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
+    */
     
+	return shaderProgram;
+}
+
+function initShadersMap(gl) {
+    var fragmentShader = getShader(gl, "shader-fs-map");
+    var vertexShader = getShader(gl, "shader-vs-map");
+
+    var shaderProgram = gl.createProgram();
+    gl.attachShader(shaderProgram, vertexShader);
+    gl.attachShader(shaderProgram, fragmentShader);
+    gl.linkProgram(shaderProgram);
+
+    if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+        alert("Could not initialise shaders");
+    }
+
+    gl.useProgram(shaderProgram);
+
+    // Coordinates 
+    shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
+    gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
+
+    // NEW --- Texture coordinates
+    shaderProgram.textureCoordAttribute = gl.getAttribLocation(shaderProgram, "aTextureCoord");
+    gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
+
     // NEW --- The sampler
     shaderProgram.samplerUniform = gl.getUniformLocation(shaderProgram, "uSampler");
 
-    //Texture or color
-    shaderProgram.isTexture = gl.getUniformLocation(shaderProgram, "isTexture");
-
-	return shaderProgram;
+    return shaderProgram;
 }
+
