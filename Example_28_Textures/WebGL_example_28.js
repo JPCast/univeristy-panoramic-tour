@@ -321,21 +321,6 @@ function handleLoadedTexture(texture) {
 var webGLTexture;
 
 function initTexture() {
-	
-	webGLTexture = gl.createTexture();
-	webGLTexture.image = new Image();
-	webGLTexture.image.onload = function () {
-		handleLoadedTexture(webGLTexture)
-	}
-    webGLTexture.image.src = "NeHe.gif";
-
-    webGLTexture2 = gl.createTexture();
-    webGLTexture2.image = new Image();
-    webGLTexture2.image.onload = function () {
-        handleLoadedTexture(webGLTexture2)
-    }
-    webGLTexture2.image.src = "Fire.gif";
-
 
     webGLTexture3 = gl.createTexture();
     webGLTexture3.image = new Image();
@@ -618,121 +603,50 @@ function animate() {
 var currentlyPressedKeys = {};
 
 function handleKeys() {
-	
 	if (currentlyPressedKeys[33]) {
-		
 		// Page Up
-		
 		sx *= 0.9;
-		
 		sz = sy = sx;
 	}
-	if (currentlyPressedKeys[34]) {
-		
+
+	if (currentlyPressedKeys[34]) {	
 		// Page Down
-		
 		sx *= 1.1;
-		
 		sz = sy = sx;
 	}
-	if (currentlyPressedKeys[37]) {
-		
+
+	if (currentlyPressedKeys[37]) {	
 		// Left cursor key
-		
 		if( rotationYY_ON == 0 ) {
-			
 			rotationYY_ON = 1;
 		}  
-		
 		rotationYY_SPEED -= 0.25;
 	}
-	if (currentlyPressedKeys[39]) {
-		
+
+	if (currentlyPressedKeys[39]) {	
 		// Right cursor key
-		
 		if( rotationYY_ON == 0 ) {
-			
 			rotationYY_ON = 1;
 		}  
-		
 		rotationYY_SPEED += 0.25;
 	}
+
 	if (currentlyPressedKeys[38]) {
-		
 		// Up cursor key
-		
 		if( rotationXX_ON == 0 ) {
-			
 			rotationXX_ON = 1;
-		}  
-		
+		}  	
 		rotationXX_SPEED -= 0.25;
 	}
+
 	if (currentlyPressedKeys[40]) {
-		
 		// Down cursor key
-		
 		if( rotationXX_ON == 0 ) {
-			
 			rotationXX_ON = 1;
 		}  
-		
 		rotationXX_SPEED += 0.25;
 	}
 }
-
-//----------------------------------------------------------------------------
-
-// Handling mouse events
-
-// Adapted from www.learningwebgl.com
-/*
-var mouseDown = false;
-
-var lastMouseX = null;
-
-var lastMouseY = null;
-
-function handleMouseDown(event) {
-	
-    mouseDown = true;
-  
-    lastMouseX = event.clientX;
-  
-    lastMouseY = event.clientY;
-}
-
-function handleMouseUp(event) {
-
-    mouseDown = false;
-}
-
-function handleMouseMove(event) {
-
-    if (!mouseDown) {
-	  
-      return;
-    } 
-  
-    // Rotation angles proportional to cursor displacement
-    
-    var newX = event.clientX;
-  
-    var newY = event.clientY;
-
-    var deltaX = newX - lastMouseX;
-    
-    angleYY += radians( 10 * deltaX  )
-
-    var deltaY = newY - lastMouseY;
-    
-    angleXX += radians( 10 * deltaY  )
-    
-    lastMouseX = newX
-    
-    lastMouseY = newY;
-  }*/
-//----------------------------------------------------------------------------
 
 // Timer
 
@@ -748,61 +662,52 @@ function tick() {
     }
 }
 
-
-//----------------------------------------------------------------------------
-//
-//  User Interaction
-//
-
-function outputInfos(){
-		
-}
-
-//----------------------------------------------------------------------------
-
 function setEventListeners( canvas ){
-	// NEW ---Handling the mouse
-	
-	// From learningwebgl.com
-/*
-    canvas.onmousedown = handleMouseDown;
-    
-    document.onmouseup = handleMouseUp;
-    
-    document.onmousemove = handleMouseMove;
-    */
-    // NEW ---Handling the keyboard
-	
-	// From learningwebgl.com
-
-    
 
     function handleKeyDown(event) {
-		
         currentlyPressedKeys[event.keyCode] = true;
     }
 
     function handleKeyUp(event) {
-		
         currentlyPressedKeys[event.keyCode] = false;
     }
 
 	document.onkeydown = handleKeyDown;
-    
     document.onkeyup = handleKeyUp;
+
+    /*document.getElementById("reset-button").onclick = function(){
+        clearPanorama();
+        set = 0;
+    };      */
 }
 
 function onDown() {
     var cnvs = document.getElementById('my-canvas');
     var posy = event.pageY - cnvs.offsetTop;
     var posx = event.pageX - cnvs.offsetLeft;
-	if(posx > 0 && posy > 0) {
+	if((posx > 623 && posx < 635) && (posy > 225 && posy < 619)) {
 		//window.location.href = "Picture Sphere.html";
         set = 1;
-		run_panoramic_view();
+		run_panoramic_view("Photos/DMAT-11(2).jpg");
 	}
+    else if((posx > 606 && posx < 622) && (posy > 236 && posy < 645)) {
+        //window.location.href = "Picture Sphere.html";
+        set = 1;
+        run_panoramic_view("Photos/DCPT-12.jpg");
+    }
+    else if((posx > 577 && posx < 603) && (posy > 253 && posy < 264)) {
+        //window.location.href = "Picture Sphere.html";
+        set = 1;
+        run_panoramic_view("Photos/DMEC-22.jpg");
+    }
+    else if((posx > 549 && posx < 579) && (posy > 279 && posy < 291)) {
+        //window.location.href = "Picture Sphere.html";
+        set = 1;
+        run_panoramic_view("Photos/DEC-28.jpg");
+    }
+    /*
     str = posx+", "+posy;
-    //alert(str);
+    alert(str);*/
 }
 
 function getClickCanvas() {
@@ -876,8 +781,7 @@ function runWebGL() {
     initBuffers();
     initBuffersMap();
 	initTexture();
-	tick();		// A timer controls the rendering / animation    
-	outputInfos();
+	tick();		// A timer controls the rendering / animation  
 	getClickCanvas();
 }
 

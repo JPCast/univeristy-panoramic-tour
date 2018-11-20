@@ -122,8 +122,8 @@
 		{
 			vec2 se = sin(euler);
 			vec2 ce = cos(euler);
-			return 	mat3(ce.x, 0, -se.x,	0, 1, 0,		se.x, 0, ce.x) * 
-					mat3(1, 0, 0,			0, ce.y, -se.y,	0, se.y, ce.y);
+			return 	mat3(ce.x, 0, -se.x, 0, 1, 0, se.x, 0, ce.x) * 
+					mat3(1, 0, 0, 0, ce.y, -se.y, 0, se.y, ce.y);
 		}
 
 		vec3 toCartesian( vec2 st )
@@ -166,17 +166,7 @@
 </head>
 
 <body onload="runWebGL();">
-<!--
-	<div class="leftcol" style="text-align: center">
-		<p></p>
-	  <h4>Escolha os departamentos que quer ver:</h4>
-	  <input type="checkbox" class="checks" value="DMAT" checked>Departamento de Matematica<br>
-	  <input type="checkbox" class="checks" value="DCPT" checked>Departamento de Ciencias Sociais<br>
-	  <input type="checkbox" class="checks" value="DMEC" checked>Departamento de Engenharia Mecanica<br>
-	  <input type="checkbox" class="checks" value="DEG" checked>Departamento de Engenharia Civil<br>
-	  <a href="#" onclick="getValue();return false;">Submeter</a>
-	</div>
--->
+
 	<div id="mySidenav" class="sidenav">
 	  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
 	  <input type="checkbox" class="checks" value="DMAT" checked>Departamento de Matematica<br>
@@ -184,11 +174,12 @@
 	  <input type="checkbox" class="checks" value="DMEC" checked>Departamento de Engenharia Mecanica<br>
 	  <input type="checkbox" class="checks" value="DEG" checked>Departamento de Engenharia Civil<br>
 	  <a href="#" onclick="getValue();return false;">Submeter</a>
+	  <button type="reset" value="Reset" id="reset-button">Reset</button>
 	</div>
 
 	
 	<h4>Escolha os departamentos que quer ver:</h4>
-	<span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; open</span>
+	<span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; Abrir</span>
 
 	<script>
 	function openNav() {
@@ -209,8 +200,6 @@
 		<canvas id="360-canvas" style="border:10px solid #FFFFFF;" width="1150" height="650"></canvas>
 		<picture></picture>
 			
-		
-				
 	</div>
 
 </body>

@@ -54,6 +54,10 @@ function init(preview_url) {
 	canvas_360.ondblclick = handleDoubleClick;				
 }
 
+function clearPanorama() {
+	gl_360.clear( gl_360.COLOR_BUFFER_BIT | gl_360.DEPTH_BUFFER_BIT );
+}
+
 function render() {
 	if ( !currentProgram ) return;
 
@@ -221,6 +225,6 @@ function handleMouse() {
 	pitch += ySpeed;
 }
 
-function run_panoramic_view() {
-	init("Photos/DMAT-11(2).jpg"); //names have changed meanwhile
+function run_panoramic_view(photo) {
+	init(photo);
 }
