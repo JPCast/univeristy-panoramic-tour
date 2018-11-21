@@ -17,253 +17,206 @@
 //
 
 var gl = null; // WebGL context
-
 var shaderProgram = null; 
 
 // NEW --- Buffers
-
 var triangleVertexPositionBuffer = null;
-
 var triangleVertexIndexBuffer = null;
-
 var triangleVertexTextureCoordBuffer;
-
 var triangleVertexColorBuffer = null;
 
 // The GLOBAL transformation parameters
-
 var globalAngleYY = 0.0;
-
 var globalTz = 0.0;
 
 // GLOBAL Animation controls
-
 var globalRotationYY_ON = 0;
-
 var globalRotationYY_DIR = 1;
-
 var globalRotationYY_SPEED = 1;
 
 // The translation vector
-
 var tx = 0.0;
-
 var ty = 0.0;
-
 var tz = 0.0;
 
 // The rotation angles in degrees
-
 var angleXX = 0.0;
-
 var angleYY = 0.0;
-
 var angleZZ = 0.0;
 
 // The scaling factors
-
 var sx = 0.25;
-
 var sy = 0.25;
-
 var sz = 0.25;
 
 // NEW - Animation controls
-
-var rotationXX_ON = 1;
-
+var rotationXX_ON = 0;
 var rotationXX_DIR = 1;
-
 var rotationXX_SPEED = 1;
- 
 var rotationYY_ON = 1;
-
 var rotationYY_DIR = 1;
-
 var rotationYY_SPEED = 1;
- 
-var rotationZZ_ON = 1;
-
+var rotationZZ_ON = 0;
 var rotationZZ_DIR = 1;
-
 var rotationZZ_SPEED = 1;
  
 // To allow choosing the way of drawing the model triangles
-
 var primitiveType = null;
  
 // To allow choosing the projection type
+var projectionType = 1;
 
-var projectionType = 0;
+// NEW --- The viewer position
+// It has to be updated according to the projection type
+var pos_Viewer = [0.0, 0.0, 0.0, 1.0];
+
+// NEW --- Point Light Source Features
+// Directional --- Homogeneous coordinate is ZERO
+var pos_Light_Source = [-5.0, 3.0, 1.0, 1.0];
+
+// White light
+var int_Light_Source = [1.0, 1.0, 1.0];
+
+// Low ambient illumination
+var ambient_Illumination = [0.3, 0.3, 0.3];
+/*
+// NEW --- Model Material Features
+// Ambient coef.
+var kAmbi = [0.2, 0.2, 0.2];
+
+// Diffuse coef.
+var kDiff = [0.6, 0.0, 0.6];
+
+// Specular coef.
+var kSpec = [0.7, 0.7, 0.7];
+
+// Phong coef.
+var nPhong = 100;
+*/
+// NEW --- Model Material Features
+// Ambient coef.
+var kAmbi = [0.0, 0.2, 1.0];
+
+// Diffuse coef.
+var kDiff = [0.5, 0.8, 1.0];
+
+// Specular coef.
+var kSpec = [1.0, 1.0, 1.0];
+
+// Phong coef.
+var nPhong = 125.0;
  
 // From learningwebgl.com
 
-// NEW --- Storing the vertices defining the cube faces
+// Initial model has just TWO TRIANGLES
 
-vertices = [
-            // Front face
-            -1.0, -1.0,  1.0,
-             1.0, -1.0,  1.0,
-             1.0,  1.0,  1.0,
-            -1.0,  1.0,  1.0,
+var vertices = [
+    // FRONT FACE
+    -0.05, -0.05, 0.05,
+    0.05, -0.05, 0.05,
+    0.05, 0.05, 0.05,
 
-            // Back face
-            -1.0, -1.0, -1.0,
-            -1.0,  1.0, -1.0,
-             1.0,  1.0, -1.0,
-             1.0, -1.0, -1.0,
+    0.05, 0.05, 0.05,
+    -0.05, 0.05, 0.05,
+    -0.05, -0.05, 0.05,
 
-            // Top face
-            -1.0,  1.0, -1.0,
-            -1.0,  1.0,  1.0,
-             1.0,  1.0,  1.0,
-             1.0,  1.0, -1.0,
+    // TOP FACE
+    -0.05, 0.05, 0.05,
+    0.05, 0.05, 0.05,
+    0.05, 0.05, -0.05,
 
-            // Bottom face
-            -1.0, -1.0, -1.0,
-             1.0, -1.0, -1.0,
-             1.0, -1.0,  1.0,
-            -1.0, -1.0,  1.0,
+    0.05, 0.05, -0.05,
+    -0.05, 0.05, -0.05,
+    -0.05, 0.05, 0.05,
 
-            // Right face
-             1.0, -1.0, -1.0,
-             1.0,  1.0, -1.0,
-             1.0,  1.0,  1.0,
-             1.0, -1.0,  1.0,
+    // BOTTOM FACE 
+    -0.05, -0.05, -0.05,
+    0.05, -0.05, -0.05,
+    0.05, -0.05, 0.05,
 
-            // Left face
-            -1.0, -1.0, -1.0,
-            -1.0, -1.0,  1.0,
-            -1.0,  1.0,  1.0,
-            -1.0,  1.0, -1.0
+    0.05, -0.05, 0.05,
+    -0.05, -0.05, 0.05,
+    -0.05, -0.05, -0.05,
+
+    // LEFT FACE 
+    -0.05, 0.05, 0.05,
+    -0.05, -0.05, -0.05,
+    -0.05, -0.05, 0.05,
+
+    -0.05, 0.05, 0.05,
+    -0.05, 0.05, -0.05,
+    -0.05, -0.05, -0.05,
+
+    // RIGHT FACE 
+    0.05, 0.05, -0.05,
+    0.05, -0.05, 0.05,
+    0.05, -0.05, -0.05,
+
+    0.05, 0.05, -0.05,
+    0.05, 0.05, 0.05,
+    0.05, -0.05, 0.05,
+
+    // BACK FACE 
+    -0.05, 0.05, -0.05,
+    0.05, -0.05, -0.05,
+    -0.05, -0.05, -0.05,
+
+    -0.05, 0.05, -0.05,
+    0.05, 0.05, -0.05,
+    0.05, -0.05, -0.05,
 ];
 
-// Texture coordinates for the quadrangular faces
 
-// Notice how they are assigne to the corresponding vertices
+var normals = [
 
-var textureCoords = [
+    // FRONTAL TRIANGLES
+    0.0, 0.0, 1.0,
+    0.0, 0.0, 1.0,
+    0.0, 0.0, 1.0,
 
-          // Front face
-          0.0, 0.0,
-          1.0, 0.0,
-          1.0, 1.0,
-          0.0, 1.0,
+    0.0, 0.0, 1.0,
+    0.0, 0.0, 1.0,
+    0.0, 0.0, 1.0,
 
-          // Back face
-          1.0, 0.0,
-          1.0, 1.0,
-          0.0, 1.0,
-          0.0, 0.0,
+    // Top
+    0.0, 1.0, 0.0,
+    0.0, 1.0, 0.0,
+    0.0, 1.0, 0.0,
+    0.0, 1.0, 0.0,
+    0.0, 1.0, 0.0,
+    0.0, 1.0, 0.0,
 
-          // Top face
-          0.0, 1.0,
-          0.0, 0.0,
-          1.0, 0.0,
-          1.0, 1.0,
+    // Bottom
+    0.0, -1.0, 0.0,
+    0.0, -1.0, 0.0,
+    0.0, -1.0, 0.0,
+    0.0, -1.0, 0.0,
+    0.0, -1.0, 0.0,
+    0.0, -1.0, 0.0,
 
-          // Bottom face
-          1.0, 1.0,
-          0.0, 1.0,
-          0.0, 0.0,
-          1.0, 0.0,
+    // Left
+    -1.0, 0.0, 0.0,
+    -1.0, 0.0, 0.0,
+    -1.0, 0.0, 0.0,
+    -1.0, 0.0, 0.0,
+    -1.0, 0.0, 0.0,
+    -1.0, 0.0, 0.0,
 
-          // Right face
-          1.0, 0.0,
-          1.0, 1.0,
-          0.0, 1.0,
-          0.0, 0.0,
+    // Right
+    1.0, 0.0, 0.0,
+    1.0, 0.0, 0.0,
+    1.0, 0.0, 0.0,
+    1.0, 0.0, 0.0,
+    1.0, 0.0, 0.0,
+    1.0, 0.0, 0.0,
 
-          // Left face
-          0.0, 0.0,
-          1.0, 0.0,
-          1.0, 1.0,
-          0.0, 1.0,
-];
-
-// Vertex indices defining the triangles
-        
-var cubeVertexIndices = [
-
-            0, 1, 2,      0, 2, 3,    // Front face
-
-            4, 5, 6,      4, 6, 7,    // Back face
-
-            8, 9, 10,     8, 10, 11,  // Top face
-
-            12, 13, 14,   12, 14, 15, // Bottom face
-
-            16, 17, 18,   16, 18, 19, // Right face
-
-            20, 21, 22,   20, 22, 23  // Left face
-];
-
-// And their colour
-
-var colors = [
-
-    // FRONT FACE - RED
-
-    1.00, 0.00, 0.00,
-
-    1.00, 0.00, 0.00,
-
-    1.00, 0.00, 0.00,
-
-    1.00, 0.00, 0.00,
-
-    // BACK FACE - BLACK
-
-    0.00, 0.00, 0.00,
-
-    0.00, 0.00, 0.00,
-
-    0.00, 0.00, 0.00,
-
-    0.00, 0.00, 0.00,
-
-    // TOP FACE - 
-
-    1.00, 1.00, 0.00,
-
-    1.00, 1.00, 0.00,
-
-    1.00, 1.00, 0.00,
-
-    1.00, 1.00, 0.00,
-
-
-    // BOTTOM FACE
-
-    0.00, 1.00, 1.00,
-
-    0.00, 1.00, 1.00,
-
-    0.00, 1.00, 1.00,
-
-    0.00, 1.00, 1.00,
-
-
-    // RIGHT FACE - BLUE
-
-    0.00, 0.00, 1.00,
-
-    0.00, 0.00, 1.00,
-
-    0.00, 0.00, 1.00,
-
-    0.00, 0.00, 1.00,
-
-
-    // LEFT FACE - GREEN
-
-    0.00, 1.00, 0.00,
-
-    0.00, 1.00, 0.00,
-
-    0.00, 1.00, 0.00,
-
-    0.00, 1.00, 0.00,
+    // Back
+    0.0, 0.0, -1.0,
+    0.0, 0.0, -1.0,
+    0.0, 0.0, -1.0,
+    0.0, 0.0, -1.0,
+    0.0, 0.0, -1.0,
+    0.0, 0.0, -1.0,
 ];
 
 var verticesMap = [
@@ -322,12 +275,12 @@ var webGLTexture;
 
 function initTexture() {
 
-    webGLTexture3 = gl.createTexture();
-    webGLTexture3.image = new Image();
-    webGLTexture3.image.onload = function () {
-        handleLoadedTexture(webGLTexture3)
+    webGLTexture = gl.createTexture();
+    webGLTexture.image = new Image();
+    webGLTexture.image.onload = function () {
+        handleLoadedTexture(webGLTexture)
     }
-    webGLTexture3.image.src = "universidade.jpg";
+    webGLTexture.image.src = "universidade.jpg";
 }
 
 //----------------------------------------------------------------------------
@@ -336,29 +289,29 @@ function initTexture() {
 
 function initBuffersButtonsSpheres() {
     gl.useProgram(shaderPrograms['ButtonsSpheres']);
-	// Coordinates
-	triangleVertexPositionBuffer = gl.createBuffer();
+    // Vertex Coordinates
+    triangleVertexPositionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexPositionBuffer);
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
     triangleVertexPositionBuffer.itemSize = 3;
-	triangleVertexPositionBuffer.numItems = vertices.length / 3;			
+    triangleVertexPositionBuffer.numItems = vertices.length / 3;
+    // Associating to the vertex shader
+    gl.vertexAttribPointer(shaderPrograms['ButtonsSpheres'].vertexPositionAttribute,
+        triangleVertexPositionBuffer.itemSize,
+        gl.FLOAT, false, 0, 0);
 
-    // Colors
-    triangleVertexColorBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexColorBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
 
-    triangleVertexColorBuffer.itemSize = 3;
-    triangleVertexColorBuffer.numItems = vertices.length / 3;
 
-	// Vertex indices
-    triangleVertexIndexBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, triangleVertexIndexBuffer);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(cubeVertexIndices), gl.STATIC_DRAW);
-
-    triangleVertexIndexBuffer.itemSize = 1;
-    triangleVertexIndexBuffer.numItems = 36;
+    // Vertex Normal Vectors
+    triangleVertexNormalBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexNormalBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW);
+    triangleVertexNormalBuffer.itemSize = 3;
+    triangleVertexNormalBuffer.numItems = normals.length / 3;
+    // Associating to the vertex shader
+    gl.vertexAttribPointer(shaderPrograms['ButtonsSpheres'].vertexNormalAttribute,
+        triangleVertexNormalBuffer.itemSize,
+        gl.FLOAT, false, 0, 0);
 }
 
 function initBuffersMap() {
@@ -409,22 +362,50 @@ function drawModelButtonsSpheres( angleXX, angleYY, angleZZ,
 
     // Passing the Projection Matrix to apply the current projection
     var pUniform = gl.getUniformLocation(shaderPrograms['ButtonsSpheres'], "uPMatrix");
-    
     gl.uniformMatrix4fv(pUniform, false, new Float32Array(flatten(pMatrix)));
 
-    // Passing the buffers
-    gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexPositionBuffer);
-    gl.vertexAttribPointer(shaderPrograms['ButtonsSpheres'].vertexPositionAttribute, triangleVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+    // Multiplying the reflection coefficents
+    var ambientProduct = mult(kAmbi, ambient_Illumination);
+    var diffuseProduct = mult(kDiff, int_Light_Source);
+    var specularProduct = mult(kSpec, int_Light_Source);
 
-    //Color
-    gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexColorBuffer);
-    gl.vertexAttribPointer(shaderPrograms['ButtonsSpheres'].vertexColorAttribute, triangleVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
+    // Associating the data to the vertex shader
+    // This can be done in a better way !!
+    // Vertex Coordinates and Vertex Normal Vectors
+    initBuffersButtonsSpheres();
 
-    // The vertex indices
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, triangleVertexIndexBuffer);
+    // Partial illumonation terms and shininess Phong coefficient
+    gl.uniform3fv(gl.getUniformLocation(shaderPrograms['ButtonsSpheres'], "ambientProduct"),
+        flatten(ambientProduct));
+    gl.uniform3fv(gl.getUniformLocation(shaderPrograms['ButtonsSpheres'], "diffuseProduct"),
+        flatten(diffuseProduct));
+    gl.uniform3fv(gl.getUniformLocation(shaderPrograms['ButtonsSpheres'], "specularProduct"),
+        flatten(specularProduct));
+    gl.uniform1f(gl.getUniformLocation(shaderPrograms['ButtonsSpheres'], "shininess"),
+        nPhong);
 
-    // Drawing the triangles --- NEW --- DRAWING ELEMENTS 
-    gl.drawElements(gl.TRIANGLES, triangleVertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);	
+    // NEW --- Passing the viewer position to the vertex shader
+    gl.uniform4fv(gl.getUniformLocation(shaderPrograms['ButtonsSpheres'], "viewerPosition"),
+        flatten(pos_Viewer));
+
+    //Position of the Light Source
+    gl.uniform4fv(gl.getUniformLocation(shaderPrograms['ButtonsSpheres'], "lightPosition"),
+        flatten(pos_Light_Source));
+
+    // Drawing 
+    // primitiveType allows drawing as filled triangles / wireframe / vertices
+    if (primitiveType == gl.LINE_LOOP) {
+        // To simulate wireframe drawing!
+        // No faces are defined! There are no hidden lines!
+        // Taking the vertices 3 by 3 and drawing a LINE_LOOP
+        var i;
+        for (i = 0; i < triangleVertexPositionBuffer.numItems / 3; i++) {
+            gl.drawArrays(primitiveType, 3 * i, 3);
+        }
+    }
+    else {
+        gl.drawArrays(primitiveType, 0, triangleVertexPositionBuffer.numItems);
+    }
 }
 
 function drawModelMap(angleXX, angleYY, angleZZ,
@@ -464,7 +445,7 @@ function drawModelMap(angleXX, angleYY, angleZZ,
     gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexTextureCoordBuffer);
     gl.vertexAttribPointer(shaderPrograms['Map'].textureCoordAttribute, cubeVertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
     gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D, webGLTexture3);
+    gl.bindTexture(gl.TEXTURE_2D, webGLTexture);
     gl.uniform1i(shaderPrograms['Map'].samplerUniform, 0);
 
     // The vertex indices
@@ -484,21 +465,29 @@ function drawScene() {
 	
 	var mvMatrix = mat4();
 	
-	gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 	
 	if( projectionType == 0 ) {
 		pMatrix = ortho( -1.0, 1.0, -1.0, 1.0, -1.0, 1.0 );
-		tz = 0;
+        tz = 0;
+
+        // NEW --- The viewer is on the ZZ axis at an indefinite distance
+        pos_Viewer[0] = pos_Viewer[1] = pos_Viewer[3] = 0.0;
+        pos_Viewer[2] = 1.0; 
 	}
 	else {	
 		
 		pMatrix = perspective( 45, 1, 0.05, 10 );
-		tz = -2.25;
+        tz = -2.25;
+
+        // NEW --- The viewer is on (0,0,0)
+        pos_Viewer[0] = pos_Viewer[1] = pos_Viewer[2] = 0.0;
+        pos_Viewer[3] = 1.0;  
 	}
 
     if(display_department.includes("DMAT")){
         // Instance --- Departamento de matemática
-        drawModelButtonsSpheres(-angleXX, -angleYY, -angleZZ,  // CW rotations
+        drawModelButtonsSpheres(angleXX, -angleYY, -angleZZ,  // CW rotations
             sx * 0.1, sy * 0.1, sz * 0.1,
             tx + 0.1, ty + 0.30, tz,
             mvMatrix,
@@ -508,7 +497,7 @@ function drawScene() {
 
     if(display_department.includes("DCPT")){
         // Instance --- Departamento Território
-        drawModelButtonsSpheres(-angleXX, -angleYY, -angleZZ,  // CW rotations
+        drawModelButtonsSpheres(angleXX, -angleYY, -angleZZ,  // CW rotations
             sx * 0.11, sy * 0.11, sz * 0.11,
             tx + 0.07, ty + 0.25, tz,
             mvMatrix,
@@ -518,7 +507,7 @@ function drawScene() {
 
     if(display_department.includes("DMEC")){
     	// Instance --- Departamento mecanica
-    	drawModelButtonsSpheres( -angleXX, angleYY, angleZZ, 
+    	drawModelButtonsSpheres( angleXX, -angleYY, angleZZ, 
             sx * 0.12, sy * 0.12, sz * 0.12,
     	           tx + 0.03, ty + 0.20, tz,
             mvMatrix,
@@ -528,7 +517,7 @@ function drawScene() {
 	
     if(display_department.includes("DEG")){
         // Instance --- Departamento ???
-        drawModelButtonsSpheres( angleXX, angleYY, -angleZZ, 
+        drawModelButtonsSpheres( angleXX, -angleYY, -angleZZ, 
             sx * 0.13, sy * 0.13, sz * 0.13,
                    tx - 0.02, ty + 0.12, tz,
             mvMatrix,
@@ -779,11 +768,11 @@ function runWebGL() {
     shaderPrograms['ButtonsSpheres'] = initShadersButtonsSpheres(gl);
     shaderPrograms['Map'] = initShadersMap(gl);
 
-    setEventListeners(canvas);
+    centroidRefinement(vertices, 6);
+    moveToSphericalSurface(vertices);
+    computeVertexNormals(vertices, normals);
 
-	moveToSphericalSurface( vertices );
-	gl.enable( gl.CULL_FACE );
-	gl.enable( gl.DEPTH_TEST );
+    setEventListeners(canvas);
     initBuffersButtonsSpheres();
     initBuffersMap();
 	initTexture();

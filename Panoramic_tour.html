@@ -74,25 +74,102 @@
 
     <script id="shader-vs-buttons-spheres" type="x-shader/x-vertex">
         attribute vec3 aVertexPosition;
-        attribute vec3 aVertexColor;
+        attribute vec3 vNormal;
+
         uniform mat4 uMVMatrix;
         uniform mat4 uPMatrix;
-        varying vec4 vertexColor;
-        void main(void) {
-        // Just converting the (x,y,z) vertices to Homogeneous Coord.
-        // And multiplying by the Projection and the Model-View matrix
-        gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
 
-        // Converting the RGB color value to RGBA
-        vertexColor = vec4(aVertexColor, 1.0);
+
+        // Light position and viewer position
+        uniform vec4 lightPosition;
+        uniform vec4 viewerPosition;
+
+        // Output values that will be interpolated per fragment
+        varying vec3 fN;
+        varying vec3 fE;
+        varying vec3 fL;
+
+        void main(void) {
+        // Vertex position after applying the global transformation
+        vec4 pos = uMVMatrix * vec4(aVertexPosition, 1.0);
+
+        // Output values to be interpolated per fragment
+        // Vertex normal vector after applying the global transformation
+        fN = (uMVMatrix * vec4(vNormal, 0.0)).xyz;
+
+        // The viewer/eye  vector
+        // The viewer is at the origin or at an indefinite distance
+        // on the ZZ axis
+        if(viewerPosition.w == 1.0)
+
+        // At the origin
+        fE = - pos.xyz;
+
+        else
+
+        // On the ZZ axis
+        fE = vec3(0,0,1);
+
+        // The Light vector
+        fL = lightPosition.xyz;
+
+        if(lightPosition.w != 0.0)
+
+        fL = fL - pos.xyz;
+
+        // The vertex projection
+        gl_Position = uPMatrix * pos;
+
         }
     </script>
 
     <script id="shader-fs-buttons-spheres" type="x-shader/x-fragment">
         precision mediump float;
-        varying vec4 vertexColor;
+
+
+        // The light intensity multiplied by the material reflection coefficients
+        uniform vec3 ambientProduct;
+        uniform vec3 diffuseProduct;
+        uniform vec3 specularProduct;
+
+        // The shininess coefficient
+        uniform float shininess;
+
+        // Per fragment interpolated values from the vertex shader
+        varying vec3 fN;
+        varying vec3 fE;
+        varying vec3 fL;
+
         void main(void) {
-        gl_FragColor = vertexColor;
+        // Normalize the input vectors
+        vec3 N = normalize( fN );
+        vec3 E = normalize( fE );
+        vec3 L = normalize( fL );
+
+        // The halfway vector
+        vec3 H = normalize( L + E );
+
+        // Phong Illumination Model
+        // Ambient illumination
+        vec4 ambient = vec4( ambientProduct, 1.0 );
+
+        // Diffuse component
+        float dotProductLN = dot(L,N);
+        float cosNL = max( dotProductLN, 0.0 );
+        vec4  diffuse = vec4( diffuseProduct * cosNL, 1.0 );
+
+        // Specular component
+        float dotProductNH = dot(N,H);
+        float cosNH = pow( max( dotProductNH, 0.0 ), shininess );
+        vec4  specular = vec4( specularProduct * cosNH, 1.0 );
+        if( dotProductLN < 0.0 ) {
+        specular = vec4(0.0, 0.0, 0.0, 1.0);
+        }
+        float s = shininess;
+
+        // Adding the illumination components
+        gl_FragColor = ambient + diffuse + specular;
+        gl_FragColor.a = 1.0;
         }
     </script>
     <script id="shader-vs-map" type="x-shader/x-vertex">
@@ -176,6 +253,9 @@
     <script type="text/javascript" src="models.js"></script>
     <script type="text/javascript" src="Panorama_360.js"></script>
 
+    <!-- Vertices de uma esfera-->
+    <script type="text/javascript" src="Vertices_Esfera.js"></script>
+
     <!-- WebGL code -->
     <script type="text/javascript" src="initShaders.js"></script>
     <script type="text/javascript" src="Panoramic_tour.js"></script>
@@ -207,16 +287,16 @@
 	}
 	</script>
 
-	<div style="text-align: center">
-		
-		<h3>Mapa da Universidade</h3>
-		<canvas id="my-canvas" width="1150" height="650"></canvas>
-		
-		<p> Vista 360 </p>
-		<canvas id="360-canvas" style="border:10px solid #FFFFFF;" width="1150" height="650"></canvas>
-		<picture></picture>
-			
-	</div>
+    <div style="text-align: center">
+
+        <h3>Mapa da Universidade</h3>
+        <canvas id="my-canvas" width="1150" height="650"></canvas>
+
+        <p> Vista 360 </p>
+        <canvas id="360-canvas" style="border:10px solid #FFFFFF;" width="1150" height="650"></canvas>
+        <picture></picture>
+
+    </div>
 
 </body>
 
