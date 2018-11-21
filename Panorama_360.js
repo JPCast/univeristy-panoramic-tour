@@ -1,8 +1,6 @@
 var canvas_360, 
-gl_360, 
-picture, picture_texture,
-buffer, 
-vertex_shader, fragment_shader, currentProgram,
+gl_360, picture_texture,
+buffer, currentProgram,
 vertex_position, 
 parameters = {	start_time	: new Date().getTime(), 
 				time		: 0, 
@@ -16,10 +14,7 @@ yaw = 0, pitch = 0, fov = 80;
 
 function run_panoramic_view(photo)  {
 
-	canvas_360 = document.getElementById("360-canvas");
-					
-	vertex_shader = document.getElementById('vs').textContent;
-	fragment_shader = document.getElementById('fs').textContent;				
+	canvas_360 = document.getElementById("360-canvas");			
 	
 	// Initialise WebGL
 	try {
@@ -36,10 +31,11 @@ function run_panoramic_view(photo)  {
 	gl_360.bufferData( gl_360.ARRAY_BUFFER, new Float32Array( [ - 1.0, - 1.0, 1.0, - 1.0, - 1.0, 1.0, 1.0, - 1.0, 1.0, 1.0, - 1.0, 1.0 ] ), gl_360.STATIC_DRAW );
 
 	// Create texture for picture
-	createTexture( photo );
+	createTexture(photo);
 
 	// Create Program
-	currentProgram = createProgram( vertex_shader, fragment_shader );
+	//currentProgram = createProgram();
+	currentProgram = initShadersPanorama(gl_360);
 
 	handleResize();
 	window.addEventListener( 'resize', handleResize, false );
@@ -82,7 +78,7 @@ function render() {
 	gl_360.disableVertexAttribArray( vertex_position );
 }
 
-
+/*
 function createShader( src, type ) {
 	var shader = gl_360.createShader( type );
 
@@ -97,8 +93,10 @@ function createShader( src, type ) {
 	return shader;
 }
 
-
-function createProgram( vertex, fragment ) {
+function createProgram() {
+					
+	vertex = document.getElementById('vs').textContent;
+	fragment = document.getElementById('fs').textContent;	
 
 	var program = gl_360.createProgram();
 
@@ -127,7 +125,7 @@ function createProgram( vertex, fragment ) {
 
 	return program;
 }
-
+*/
 
 function createTexture( image_src ) {
 	picture_texture = gl_360.createTexture();
@@ -146,8 +144,6 @@ function createTexture( image_src ) {
 
 	picture_texture.image.src = image_src;
 }
-
-
 
 function handleResize( event ) {
 	//The next two lines resize the canvas_360 to the whole windows size
@@ -182,7 +178,6 @@ function handleDoubleClick(event) {
 	}
 }
 
-
 function handleMouseDown(event) {
 	startDragX = event.clientX;
 	startDragY = event.clientY;
@@ -193,12 +188,10 @@ function handleMouseDown(event) {
 	return false;
 }
 
-
 function handleMouseUp(event) {
 	currentlyDragging = false;
 	return false;
 }
-
 
 function handleMouseMove(event) {
 	if(currentlyDragging) {
@@ -207,7 +200,6 @@ function handleMouseMove(event) {
 	}
 	return false;
 }
-
 
 function handleMouse() {
 	if (currentlyDragging) {

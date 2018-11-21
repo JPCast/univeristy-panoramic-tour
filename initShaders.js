@@ -113,3 +113,52 @@ function initShadersMap(gl) {
     return shaderProgram;
 }
 
+
+function createShader( src, type ) {
+	var shader = gl_360.createShader( type );
+
+	gl_360.shaderSource( shader, src );
+	gl_360.compileShader( shader );
+
+	if ( !gl_360.getShaderParameter( shader, gl_360.COMPILE_STATUS ) ) {
+		alert( ( type == gl_360.VERTEX_SHADER ? "VERTEX" : "FRAGMENT" ) + " SHADER:\n" + gl_360.getShaderInfoLog( shader ) );
+		return null;
+	}
+
+	return shader;
+}
+
+function initShadersPanorama(gl) {
+	vertex = document.getElementById('vs').textContent;
+	fragment = document.getElementById('fs').textContent;
+
+	var program = gl.createProgram();
+
+	var vs = createShader( vertex, gl.VERTEX_SHADER );
+	var fs = createShader( '#ifdef GL_ES\nprecision highp float;\n#endif\n\n' + fragment, gl.FRAGMENT_SHADER );
+
+	if ( vs == null || fs == null ) return null;
+
+	gl.attachShader( program, vs );
+	gl.attachShader( program, fs );
+
+	gl.deleteShader( vs );
+	gl.deleteShader( fs );
+
+	gl.linkProgram( program );
+
+	if ( !gl.getProgramParameter( program, gl.LINK_STATUS ) ) {
+		alert( "ERROR:\n" +
+		"VALIDATE_STATUS: " + gl.getProgramParameter( program, gl.VALIDATE_STATUS ) + "\n" +
+		"ERROR: " + gl.getError() + "\n\n" +
+		"- Vertex Shader -\n" + vertex + "\n\n" +
+		"- Fragment Shader -\n" + fragment );
+
+		return null;
+	}
+
+	return program;
+}
+
+	
+
