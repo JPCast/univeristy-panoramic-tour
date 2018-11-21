@@ -78,7 +78,7 @@ function render() {
 	gl_360.disableVertexAttribArray( vertex_position );
 }
 
-/*
+
 function createShader( src, type ) {
 	var shader = gl_360.createShader( type );
 
@@ -125,7 +125,7 @@ function createProgram() {
 
 	return program;
 }
-*/
+
 
 function createTexture( image_src ) {
 	picture_texture = gl_360.createTexture();

@@ -30,16 +30,16 @@ function getShader(gl, id) {
     if (shaderScript.type == "x-shader/x-fragment") {
         shader = gl.createShader(gl.FRAGMENT_SHADER);
 	} else if (shaderScript.type == "x-shader/x-vertex") {
-		shader = gl.createShader(gl.VERTEX_SHADER);
+        shader = gl.createShader(gl.VERTEX_SHADER);
 	} else {
 		return null;
 	}
 
-	gl.shaderSource(shader, str);
-	gl.compileShader(shader);
+    gl.shaderSource(shader, str);
+    gl.compileShader(shader);
 
-	if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-		alert(gl.getShaderInfoLog(shader));
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        alert(gl.getShaderInfoLog(shader));
 		return null;
 	}
 
@@ -114,50 +114,33 @@ function initShadersMap(gl) {
 }
 
 
-function createShader( src, type ) {
-	var shader = gl_360.createShader( type );
-
-	gl_360.shaderSource( shader, src );
-	gl_360.compileShader( shader );
-
-	if ( !gl_360.getShaderParameter( shader, gl_360.COMPILE_STATUS ) ) {
-		alert( ( type == gl_360.VERTEX_SHADER ? "VERTEX" : "FRAGMENT" ) + " SHADER:\n" + gl_360.getShaderInfoLog( shader ) );
-		return null;
-	}
-
-	return shader;
-}
-
 function initShadersPanorama(gl) {
-	vertex = document.getElementById('vs').textContent;
-	fragment = document.getElementById('fs').textContent;
+    var fragmentShader = getShader(gl, "shader-fs-360-panorama");
+    var vertexShader = getShader(gl, "shader-vs-360-panorama");
 
-	var program = gl.createProgram();
+    var shaderProgram = gl.createProgram();
+    gl.attachShader(shaderProgram, vertexShader);
+    gl.attachShader(shaderProgram, fragmentShader);
+    gl.linkProgram(shaderProgram);
 
-	var vs = createShader( vertex, gl.VERTEX_SHADER );
-	var fs = createShader( '#ifdef GL_ES\nprecision highp float;\n#endif\n\n' + fragment, gl.FRAGMENT_SHADER );
+    if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+        alert("Could not initialise shaders");
+    }
 
-	if ( vs == null || fs == null ) return null;
+    gl.useProgram(shaderProgram);
+    
+    // Coordinates 
+    shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
+    gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
 
-	gl.attachShader( program, vs );
-	gl.attachShader( program, fs );
-
-	gl.deleteShader( vs );
-	gl.deleteShader( fs );
-
-	gl.linkProgram( program );
-
-	if ( !gl.getProgramParameter( program, gl.LINK_STATUS ) ) {
-		alert( "ERROR:\n" +
-		"VALIDATE_STATUS: " + gl.getProgramParameter( program, gl.VALIDATE_STATUS ) + "\n" +
-		"ERROR: " + gl.getError() + "\n\n" +
-		"- Vertex Shader -\n" + vertex + "\n\n" +
-		"- Fragment Shader -\n" + fragment );
-
-		return null;
-	}
-
-	return program;
+    // NEW --- Texture coordinates
+    shaderProgram.textureCoordAttribute = gl.getAttribLocation(shaderProgram, "aTextureCoord");
+    gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
+    
+    // NEW --- The sampler
+    shaderProgram.samplerUniform = gl.getUniformLocation(shaderProgram, "uSampler");
+    
+    return shaderProgram;
 }
 
 	
