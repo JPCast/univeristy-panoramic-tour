@@ -15,7 +15,7 @@
 //
 // Global Variables
 //
-
+var isDisplayingMap = 1;
 var gl = null; // WebGL context
 var shaderProgram = null; 
 
@@ -349,22 +349,28 @@ var textureCoordsPanorama = [
     1.00, 0.75,
     0.75, 1.00,
 
-    // Back Left
-    0.25, 0.0,
+    // Bottom Left
+    0.25, 0.25,
     0.0, 0.25,
-    0.25, 0.25,
-    // Back Front
+    0.25, 0.0,
+    
+    // Bottom Front
     0.50, 0.25,
+    0.25, 0.25,
     0.25, 0.00,
-    0.25, 0.25,
-    // Back Right
-    0.75, 0.00,
+    
+    // Bottom Right
+    0.75, 0.25,
     0.50, 0.25,
-    0.75, 0.25,
-    // Back Back
-    1.00, 0.25,
     0.75, 0.00,
+    
+    // Bottom Back
+    1.00, 0.25,
     0.75, 0.25,
+    0.75, 0.00,
+    
+    
+    
 ];
 
 var vertexIndicesPanorama = [
@@ -391,7 +397,6 @@ var vertexIndicesPanorama = [
 
 var display_department = '';
 var turn = 0;
-var set = 0;
          
          
 //----------------------------------------------------------------------------
@@ -937,10 +942,6 @@ function tick() {
 	handleKeys();
     drawScene();
 	animate();
-    if(set){
-        //handleMouse();
-        //render();
-    }
 }
 
 function setEventListeners( canvas ){
@@ -959,10 +960,7 @@ function setEventListeners( canvas ){
     canvas.onmousedown = handleMouseDown;
     document.onmouseup = handleMouseUp;
     document.onmousemove = handleMouseMove;
-    /*document.getElementById("reset-button").onclick = function(){
-        clearPanorama();
-        set = 0;
-    };      */
+
 }
 
 function onDown(event) {
@@ -971,29 +969,29 @@ function onDown(event) {
     var posx = event.pageX - cnvs.offsetLeft;
     console.log("x" + posx);
     console.log("y" + posy);
-	if((posx > 623 && posx < 635) && (posy > 225 && posy < 619)) {
-        set = 1;
-        tzPanorama = 0.0;
-        initTexturePanorama("Photos/DMAT-11(2).jpg");
-	}
-    else if((posx > 606 && posx < 622) && (posy > 236 && posy < 645)) {
-        set = 1;
-        tzPanorama = 0.0;
-        initTexturePanorama("Photos/DCPT-12.jpg");
-    }
-    else if((posx > 577 && posx < 603) && (posy > 253 && posy < 264)) {
-        set = 1;
-        tzPanorama = 0.0;
-        initTexturePanorama("Photos/DMEC-22.jpg");
-    }
-    else if((posx > 549 && posx < 579) && (posy > 279 && posy < 291)) {
-        set = 1;
-        tzPanorama = 0.0;
-        initTexturePanorama("Photos/DEC-28.jpg");
-    }
-
-    else if ((posx < 100) && (posy < 100)) {
-        tzPanorama = 5.0;
+    if (isDisplayingMap) {
+        isDisplayingMap = 0;
+        if ((posx > 623 && posx < 635) && (posy > 225 && posy < 619)) {
+            tzPanorama = 0.0;
+            initTexturePanorama("Photos/DMAT-11(2).jpg");
+        }
+        else if ((posx > 606 && posx < 622) && (posy > 236 && posy < 645)) {
+            tzPanorama = 0.0;
+            initTexturePanorama("Photos/DCPT-12.jpg");
+        }
+        else if ((posx > 577 && posx < 603) && (posy > 253 && posy < 264)) {
+            tzPanorama = 0.0;
+            initTexturePanorama("Photos/DMEC-22.jpg");
+        }
+        else if ((posx > 549 && posx < 579) && (posy > 279 && posy < 291)) {
+            tzPanorama = 0.0;
+            initTexturePanorama("Photos/DEC-28.jpg");
+        }
+    } else {
+        isDisplayingMap = 1;
+        if ((posx < 100) && (posy < 100)) {
+            tzPanorama = 5.0;
+        }
     }
     console.log("tzPanorama" + tzPanorama);
     /*
