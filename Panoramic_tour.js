@@ -465,7 +465,7 @@ function drawModelPanorama(glTmp, angleXX, angleYY, angleZZ,
     glTmp.drawElements(glTmp.TRIANGLES, panoramaVertexIndexBuffer.numItems, glTmp.UNSIGNED_SHORT, 0);
 }
 
-function drawModelPanoramaCanvas360(glTmp, angleXX, angleYY, angleZZ,
+function drawModelPanoramaCanvas360(glTmp, angleXXCanvas360, angleYYCanvas360, angleZZCanvas360,
     sx, sy, sz,
     tx, ty, tz,
     mvMatrix,
@@ -476,11 +476,11 @@ function drawModelPanoramaCanvas360(glTmp, angleXX, angleYY, angleZZ,
 
     mvMatrix = mult(mvMatrix, translationMatrix(tx, ty, tz));
 
-    mvMatrix = mult(mvMatrix, rotationZZMatrix(angleZZ));
+    mvMatrix = mult(mvMatrix, rotationZZMatrix(angleZZCanvas360));
 
-    mvMatrix = mult(mvMatrix, rotationYYMatrix(angleYY));
+    mvMatrix = mult(mvMatrix, rotationYYMatrix(angleYYCanvas360));
 
-    mvMatrix = mult(mvMatrix, rotationXXMatrix(angleXX));
+    mvMatrix = mult(mvMatrix, rotationXXMatrix(angleXXCanvas360));
 
     mvMatrix = mult(mvMatrix, scalingMatrix(sx, sy, sz));
 
@@ -616,7 +616,7 @@ function drawScene() {
         primitiveType);
 
     // Panorama canvas 360
-    drawModelPanoramaCanvas360(gl_360, -angleXXPanoramaCanvas360, -angleYYPanoramaCanvas360, -angleZZPanoramaCanvas360,
+    drawModelPanoramaCanvas360(gl_360, -angleXXPanoramaCanvas360 * Math.cos(radians(angleYYPanoramaCanvas360)), -angleYYPanoramaCanvas360, angleZZPanoramaCanvas360,
         sx, sy, sz,
         tx, ty, tzPanoramaCanvas360,
         mvMatrix,

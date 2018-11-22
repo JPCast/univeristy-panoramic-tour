@@ -79,10 +79,11 @@ var lastMouseYCanvas360 = null;
 function handleMouseDownCanvas360(event) {
 
     mouseDownCanvas360 = true;
-
     lastMouseXCanvas360 = event.clientX;
-
     lastMouseYCanvas360 = event.clientY;
+
+    console.log("lastMouseX: " + lastMouseXCanvas360);
+    console.log("lastMouseY: " + lastMouseYCanvas360);
 }
 
 function handleMouseUpCanvas360(event) {
@@ -100,16 +101,25 @@ function handleMouseMoveCanvas360(event) {
     // Rotation angles proportional to cursor displacement
 
     var newX = event.clientX;
-
     var newY = event.clientY;
+
+    //console.log("newX: " + newX);
+    //console.log("newY: " + newY);
 
     var deltaX = newX - lastMouseXCanvas360;
 
-    angleYYPanoramaCanvas360 += radians(10 * deltaX)
+    angleYYPanoramaCanvas360 += radians(5 * deltaX)
 
     var deltaY = newY - lastMouseYCanvas360;
 
-    angleXXPanoramaCanvas360 += radians(10 * deltaY)
+    angleXXPanoramaCanvas360 += radians(5 * deltaY)
+
+    console.log("angleXXPanoramaCanvas360: " + angleXXPanoramaCanvas360);
+    console.log("angleYYPanoramaCanvas360: " + angleYYPanoramaCanvas360);
+
+    //console.log("Lixo: " + angleXXPanoramaCanvas360 * Math.sin(Math.PI * angleYYPanoramaCanvas360 / 180));
+
+    //console.log("Sin: " + Math.sin(Math.PI * angleYYPanoramaCanvas360 / 180));
 
     lastMouseXCanvas360 = newX
 
