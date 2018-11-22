@@ -15,7 +15,7 @@
 //
 // Global Variables
 //
-var isDisplayingMap = 1;
+var isDisplayingMap = true;
 var gl = null; // WebGL context
 var gl_360 = null; // WebGL context
 var shaderProgram = null; 
@@ -1053,31 +1053,34 @@ function onDown(event) {
     console.log("x" + posx);
     console.log("y" + posy);
     if (isDisplayingMap) {
-        isDisplayingMap = 0;
         if ((posx > 623 && posx < 635) && (posy > 225 && posy < 619)) {
+            isDisplayingMap = false;
             initTexturePanorama(gl, 'Panorama', "Photos/DMAT-11(2).jpg");
             initTexturePanorama(gl_360, 'PanoramaCanvas360', "Photos/DMAT-11(2).jpg");
             tzPanorama = 0.0;
         }
         else if ((posx > 606 && posx < 622) && (posy > 236 && posy < 645)) {
+            isDisplayingMap = false;
             initTexturePanorama(gl, 'Panorama', "Photos/DCPT-12.jpg");
             initTexturePanorama(gl_360, 'PanoramaCanvas360', "Photos/DCPT-12.jpg");
             tzPanorama = 0.0;
         }
         else if ((posx > 577 && posx < 603) && (posy > 253 && posy < 264)) {
+            isDisplayingMap = false;
             initTexturePanorama(gl, 'Panorama', "Photos/DMEC-22.jpg");
             initTexturePanorama(gl_360, 'PanoramaCanvas360', "Photos/DMEC-22.jpg");
             tzPanorama = 0.0;
         }
         else if ((posx > 549 && posx < 579) && (posy > 279 && posy < 291)) {
+            isDisplayingMap = false;
             initTexturePanorama(gl, 'Panorama', "Photos/DEC-28.jpg");
             initTexturePanorama(gl_360, 'PanoramaCanvas360', "Photos/DEC-28.jpg");
             tzPanorama = 0.0;
         }
         
     } else {
-        isDisplayingMap = 1;
         if ((posx < 100) && (posy < 100)) {
+            isDisplayingMap = true;
             initTextureMap(gl);
             tzPanorama = 5.0;
         }
