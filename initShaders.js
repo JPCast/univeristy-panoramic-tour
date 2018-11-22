@@ -115,7 +115,7 @@ function initShadersMap(gl) {
 
 
 function initShadersPanorama(gl) {
-    var fragmentShader = getShader(gl, "shader-fs-360-panorama");
+    var fragmentShader = getShader(gl, "shader-fs-map");
     var vertexShader = getShader(gl, "shader-vs-360-panorama");
 
     var shaderProgram = gl.createProgram();

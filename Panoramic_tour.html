@@ -11,66 +11,7 @@
     <link rel="stylesheet" type="text/css" href="bootstrap-4.0.0-dist/css/bootstrap-grid.min.css" />
     <link rel="stylesheet" type="text/css" href="bootstrap-4.0.0-dist/css/bootstrap-reboot.css" />
     <link rel="stylesheet" type="text/css" href="bootstrap-4.0.0-dist/css/bootstrap-reboot.min.css" />
-    <style>
-        .leftcol {
-            width: 300px;
-            height: auto;
-            float: left;
-        }
-    </style>
-
-    <style>
-        body {
-            font-family: "Lato", sans-serif;
-            background-color: #0F1F1F;
-            color: #FFF;
-        }
-
-        .sidenav {
-            height: 100%;
-            width: 0;
-            position: fixed;
-            z-index: 1;
-            top: 0;
-            left: 0;
-            background-color: #111;
-            overflow-x: hidden;
-            transition: 0.5s;
-            padding-top: 60px;
-        }
-
-            .sidenav a {
-                padding: 8px 8px 8px 32px;
-                text-decoration: none;
-                font-size: 25px;
-                color: #FFFFFF;
-                display: block;
-                transition: 0.3s;
-            }
-
-                .sidenav a:hover {
-                    color: #f1f1f1;
-                }
-
-            .sidenav .closebtn {
-                position: absolute;
-                top: 0;
-                right: 25px;
-                font-size: 36px;
-                margin-left: 50px;
-            }
-
-        @media screen and (max-height: 450px) {
-            .sidenav {
-                padding-top: 15px;
-            }
-
-                .sidenav a {
-                    font-size: 18px;
-                }
-        }
-    </style>
-
+    <link rel="stylesheet" type="text/css" href="bootstrap-4.0.0-dist/css/custom.css" />
 
     <script id="shader-vs-buttons-spheres" type="x-shader/x-vertex">
         attribute vec3 aVertexPosition;
@@ -211,6 +152,7 @@
         } 
     </script>
 
+    <!-- Maybe this shader can be removed -->
     <script id="shader-fs-360-panorama" type="x-shader/x-fragment">
         precision mediump float;
         varying vec2 vTextureCoord;
@@ -232,6 +174,7 @@
 
     <!-- WebGL code -->
     <script type="text/javascript" src="initShaders.js"></script>
+    <script type="text/javascript" src="vertices_definition.js"></script>
     <script type="text/javascript" src="Panoramic_tour.js"></script>
 </head>
 
@@ -244,7 +187,12 @@
 	  <input type="checkbox" class="checks" value="DMEC" checked>Departamento de Engenharia Mecanica<br>
 	  <input type="checkbox" class="checks" value="DEG" checked>Departamento de Engenharia Civil<br>
 	  <a href="#" onclick="getValue();return false;">Submeter</a>
-	  <button type="reset" value="Reset" id="reset-button">Reset</button>
+      <p>Display panoramic view in canvas bellow
+	  <label class="switch">
+        <input type="checkbox" checked>
+        <span class="slider round"></span>
+      </label>
+      </p>
 	</div>
 
 	

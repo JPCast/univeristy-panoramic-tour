@@ -117,285 +117,6 @@ var nPhong = 125.0;
 
 // Initial model has just TWO TRIANGLES
 
-var vertices = [
-    // FRONT FACE
-    -0.05, -0.05, 0.05,
-    0.05, -0.05, 0.05,
-    0.05, 0.05, 0.05,
-
-    0.05, 0.05, 0.05,
-    -0.05, 0.05, 0.05,
-    -0.05, -0.05, 0.05,
-
-    // TOP FACE
-    -0.05, 0.05, 0.05,
-    0.05, 0.05, 0.05,
-    0.05, 0.05, -0.05,
-
-    0.05, 0.05, -0.05,
-    -0.05, 0.05, -0.05,
-    -0.05, 0.05, 0.05,
-
-    // BOTTOM FACE 
-    -0.05, -0.05, -0.05,
-    0.05, -0.05, -0.05,
-    0.05, -0.05, 0.05,
-
-    0.05, -0.05, 0.05,
-    -0.05, -0.05, 0.05,
-    -0.05, -0.05, -0.05,
-
-    // LEFT FACE 
-    -0.05, 0.05, 0.05,
-    -0.05, -0.05, -0.05,
-    -0.05, -0.05, 0.05,
-
-    -0.05, 0.05, 0.05,
-    -0.05, 0.05, -0.05,
-    -0.05, -0.05, -0.05,
-
-    // RIGHT FACE 
-    0.05, 0.05, -0.05,
-    0.05, -0.05, 0.05,
-    0.05, -0.05, -0.05,
-
-    0.05, 0.05, -0.05,
-    0.05, 0.05, 0.05,
-    0.05, -0.05, 0.05,
-
-    // BACK FACE 
-    -0.05, 0.05, -0.05,
-    0.05, -0.05, -0.05,
-    -0.05, -0.05, -0.05,
-
-    -0.05, 0.05, -0.05,
-    0.05, 0.05, -0.05,
-    0.05, -0.05, -0.05,
-];
-
-
-var normals = [
-
-    // FRONTAL TRIANGLES
-    0.0, 0.0, 1.0,
-    0.0, 0.0, 1.0,
-    0.0, 0.0, 1.0,
-
-    0.0, 0.0, 1.0,
-    0.0, 0.0, 1.0,
-    0.0, 0.0, 1.0,
-
-    // Top
-    0.0, 1.0, 0.0,
-    0.0, 1.0, 0.0,
-    0.0, 1.0, 0.0,
-    0.0, 1.0, 0.0,
-    0.0, 1.0, 0.0,
-    0.0, 1.0, 0.0,
-
-    // Bottom
-    0.0, -1.0, 0.0,
-    0.0, -1.0, 0.0,
-    0.0, -1.0, 0.0,
-    0.0, -1.0, 0.0,
-    0.0, -1.0, 0.0,
-    0.0, -1.0, 0.0,
-
-    // Left
-    -1.0, 0.0, 0.0,
-    -1.0, 0.0, 0.0,
-    -1.0, 0.0, 0.0,
-    -1.0, 0.0, 0.0,
-    -1.0, 0.0, 0.0,
-    -1.0, 0.0, 0.0,
-
-    // Right
-    1.0, 0.0, 0.0,
-    1.0, 0.0, 0.0,
-    1.0, 0.0, 0.0,
-    1.0, 0.0, 0.0,
-    1.0, 0.0, 0.0,
-    1.0, 0.0, 0.0,
-
-    // Back
-    0.0, 0.0, -1.0,
-    0.0, 0.0, -1.0,
-    0.0, 0.0, -1.0,
-    0.0, 0.0, -1.0,
-    0.0, 0.0, -1.0,
-    0.0, 0.0, -1.0,
-];
-
-var verticesMap = [
-    // Front face
-    -2.90, -2.90, 0,
-    2.90, -2.90, 0,
-    2.90, 2.90, 0,
-    -2.90, 2.90, 0,
-];
-
-var textureCoordsMap = [
-    // Front face
-    0.0, 0.0,
-    1.0, 0.0,
-    1.0, 1.0,
-    0.0, 1.0,
-];
-
-var vertexIndicesMap = [
-    0, 1, 2, 0, 2, 3,    // Front face
-];
-
-var verticesPanorama = [
-    // Front face
-    -1.0, -1.0, 1.0,
-    1.0, -1.0, 1.0,
-    1.0, 1.0, 1.0,
-    -1.0, 1.0, 1.0,
-
-    // Back face
-    -1.0, -1.0, -1.0,
-    -1.0, 1.0, -1.0,
-    1.0, 1.0, -1.0,
-    1.0, -1.0, -1.0,
-
-    // Right face
-    1.0, -1.0, -1.0,
-    1.0, 1.0, -1.0,
-    1.0, 1.0, 1.0,
-    1.0, -1.0, 1.0,
-
-    // Left face
-    -1.0, -1.0, -1.0,
-    -1.0, -1.0, 1.0,
-    -1.0, 1.0, 1.0,
-    -1.0, 1.0, -1.0,
-
-    // Top Left
-    -1.0, 1.0, -1.0,
-    -1.0, 1.0, 1.0,
-    0.0, 1.0, 0.0,
-    // Top Front
-    -1.0, 1.0, 1.0,
-    1.0, 1.0, 1.0,
-    0.0, 1.0, 0.0,
-    // Top Right
-    1.0, 1.0, 1.0,
-    1.0, 1.0, -1.0,
-    0.0, 1.0, 0.0,
-    // Top Back
-    1.0, 1.0, -1.0,
-    -1.0, 1.0, -1.0,
-    0.0, 1.0, 0.0,
-
-
-    // Bottom Left
-    -1.0, -1.0, 1.0,
-    -1.0, -1.0, -1.0,
-    0.0, -1.0, 0.0,
-    // Top Front
-    1.0, -1.0, 1.0,
-    -1.0, -1.0, 1.0,
-    0.0, -1.0, 0.0,
-    // Top Right
-    1.0, -1.0, -1.0,
-    1.0, -1.0, 1.0,
-    0.0, -1.0, 0.0,
-    // Top Back
-    -1.0, -1.0, -1.0,
-    1.0, -1.0, -1.0,
-    0.0, -1.0, 0.0,
-];
-
-var textureCoordsPanorama = [
-
-    // Front face
-    0.25, 0.25,
-    0.50, 0.25,
-    0.50, 0.75,
-    0.25, 0.75,
-
-    // Back face
-    1.0, 0.25,
-    1.0, 0.75,
-    0.75, 0.75,
-    0.75, 0.25,
-
-    // Right face
-    0.75, 0.25,
-    0.75, 0.75,
-    0.50, 0.75,
-    0.50, 0.25,
-
-    // Left face
-    0.0, 0.25,
-    0.25, 0.25,
-    0.25, 0.75,
-    0.0, 0.75,
-
-    // Top Left
-    0.0, 0.75,
-    0.25, 0.75,
-    0.25, 1.00,
-    // Top Front
-    0.25, 0.75,
-    0.50, 0.75,
-    0.25, 1.00,
-    // Top Right
-    0.50, 0.75,
-    0.75, 0.75,
-    0.75, 1.00,
-    // Top Back
-    0.75, 0.75,
-    1.00, 0.75,
-    0.75, 1.00,
-
-    // Bottom Left
-    0.25, 0.25,
-    0.0, 0.25,
-    0.25, 0.0,
-    
-    // Bottom Front
-    0.50, 0.25,
-    0.25, 0.25,
-    0.25, 0.00,
-    
-    // Bottom Right
-    0.75, 0.25,
-    0.50, 0.25,
-    0.75, 0.00,
-    
-    // Bottom Back
-    1.00, 0.25,
-    0.75, 0.25,
-    0.75, 0.00,
-    
-    
-    
-];
-
-var vertexIndicesPanorama = [
-    0, 1, 2, 0, 2, 3,    // Front face
-
-    4, 5, 6, 4, 6, 7,    // Back face
-
-    8, 9, 10, 8, 10, 11,  // Right face
-
-    12, 13, 14, 12, 14, 15, // Left face
-
-    16, 17, 18, // Top Left
-    19, 20, 21, // Top Front
-    22, 23, 24, // Top Right
-    25, 26, 27, // Top Back
-
-    28, 29, 30, // Bottom Left
-    31, 32, 33, // Bottom Front
-    34, 35, 36, // Bottom Right
-    37, 38, 39, // Bottom Back
-
-];
-
-
 var display_department = '';
 var turn = 0;
          
@@ -1053,25 +774,25 @@ function onDown(event) {
     console.log("x" + posx);
     console.log("y" + posy);
     if (isDisplayingMap) {
-        if ((posx > 623 && posx < 635) && (posy > 225 && posy < 619)) {
+        if ((posx > 623 && posx < 635) && (posy > 225 && posy < 619) && display_department.includes("DMAT")) {
             isDisplayingMap = false;
             initTexturePanorama(gl, 'Panorama', "Photos/DMAT-11(2).jpg");
             initTexturePanorama(gl_360, 'PanoramaCanvas360', "Photos/DMAT-11(2).jpg");
             tzPanorama = 0.0;
         }
-        else if ((posx > 606 && posx < 622) && (posy > 236 && posy < 645)) {
+        else if ((posx > 606 && posx < 622) && (posy > 236 && posy < 645) && display_department.includes("DCPT")) {
             isDisplayingMap = false;
             initTexturePanorama(gl, 'Panorama', "Photos/DCPT-12.jpg");
             initTexturePanorama(gl_360, 'PanoramaCanvas360', "Photos/DCPT-12.jpg");
             tzPanorama = 0.0;
         }
-        else if ((posx > 577 && posx < 603) && (posy > 253 && posy < 264)) {
+        else if ((posx > 577 && posx < 603) && (posy > 253 && posy < 264)  && display_department.includes("DMEC")) {
             isDisplayingMap = false;
             initTexturePanorama(gl, 'Panorama', "Photos/DMEC-22.jpg");
             initTexturePanorama(gl_360, 'PanoramaCanvas360', "Photos/DMEC-22.jpg");
             tzPanorama = 0.0;
         }
-        else if ((posx > 549 && posx < 579) && (posy > 279 && posy < 291)) {
+        else if ((posx > 549 && posx < 579) && (posy > 279 && posy < 291)  && display_department.includes("DEC")) {
             isDisplayingMap = false;
             initTexturePanorama(gl, 'Panorama', "Photos/DEC-28.jpg");
             initTexturePanorama(gl_360, 'PanoramaCanvas360', "Photos/DEC-28.jpg");
