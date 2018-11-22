@@ -17,6 +17,7 @@
 //
 var isDisplayingMap = 1;
 var gl = null; // WebGL context
+var gl_360 = null; // WebGL context
 var shaderProgram = null; 
 
 // NEW --- Buffers
@@ -413,7 +414,7 @@ var turn = 0;
 
 // From www.learningwebgl.com
 
-function handleLoadedTexture(texture) {
+function handleLoadedTexture(gl, texture) {
 	
 	gl.bindTexture(gl.TEXTURE_2D, texture);
 	gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
@@ -426,21 +427,23 @@ function handleLoadedTexture(texture) {
 }
 
 var webGLTextureMap;
-function initTextureMap() {
+function initTextureMap(gl) {
+    gl.useProgram(shaderPrograms['Map']);
     webGLTextureMap = gl.createTexture();
     webGLTextureMap.image = new Image();
     webGLTextureMap.image.onload = function () {
-        handleLoadedTexture(webGLTextureMap)
+        handleLoadedTexture(gl, webGLTextureMap)
     }
     webGLTextureMap.image.src = "universidade.jpg";
 }
 
 var webGLTexturePanorama;
-function initTexturePanorama(picturePath) {
+function initTexturePanorama(gl, shaderName, picturePath) {
+    gl.useProgram(shaderPrograms[shaderName]);
     webGLTexturePanorama = gl.createTexture();
     webGLTexturePanorama.image = new Image();
     webGLTexturePanorama.image.onload = function () {
-        handleLoadedTexture(webGLTexturePanorama)
+        handleLoadedTexture(gl, webGLTexturePanorama)
     }
     webGLTexturePanorama.image.src = picturePath;
 }
@@ -500,28 +503,52 @@ function initBuffersMap() {
     cubeVertexIndexBuffer.numItems = 6;
 }
 
-function initBuffersPanorama() {
-    gl.useProgram(shaderPrograms['Panorama']);
+function initBuffersPanorama(glTmp) {
+    glTmp.useProgram(shaderPrograms['Panorama']);
     // Coordinates
-    panoramaVertexPositionBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, panoramaVertexPositionBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verticesPanorama), gl.STATIC_DRAW);
+    panoramaVertexPositionBuffer = glTmp.createBuffer();
+    glTmp.bindBuffer(glTmp.ARRAY_BUFFER, panoramaVertexPositionBuffer);
+    glTmp.bufferData(glTmp.ARRAY_BUFFER, new Float32Array(verticesPanorama), glTmp.STATIC_DRAW);
     panoramaVertexPositionBuffer.itemSize = 3;
     panoramaVertexPositionBuffer.numItems = vertices.length / 3;;
 
     // Textures
-    panoramaVertexTextureCoordBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, panoramaVertexTextureCoordBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoordsPanorama), gl.STATIC_DRAW);
+    panoramaVertexTextureCoordBuffer = glTmp.createBuffer();
+    glTmp.bindBuffer(glTmp.ARRAY_BUFFER, panoramaVertexTextureCoordBuffer);
+    glTmp.bufferData(glTmp.ARRAY_BUFFER, new Float32Array(textureCoordsPanorama), glTmp.STATIC_DRAW);
     panoramaVertexTextureCoordBuffer.itemSize = 2;
     panoramaVertexTextureCoordBuffer.numItems = 4;
     
     // Vertex indices
-    panoramaVertexIndexBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, panoramaVertexIndexBuffer);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(vertexIndicesPanorama), gl.STATIC_DRAW);
+    panoramaVertexIndexBuffer = glTmp.createBuffer();
+    glTmp.bindBuffer(glTmp.ELEMENT_ARRAY_BUFFER, panoramaVertexIndexBuffer);
+    glTmp.bufferData(glTmp.ELEMENT_ARRAY_BUFFER, new Uint16Array(vertexIndicesPanorama), glTmp.STATIC_DRAW);
     panoramaVertexIndexBuffer.itemSize = 1;
     panoramaVertexIndexBuffer.numItems = vertexIndicesPanorama.length;
+}
+
+function initBuffersPanoramaCanvas360(glTmp) {
+    glTmp.useProgram(shaderPrograms['PanoramaCanvas360']);
+    // Coordinates
+    panoramaCanvas360VertexPositionBuffer = glTmp.createBuffer();
+    glTmp.bindBuffer(glTmp.ARRAY_BUFFER, panoramaCanvas360VertexPositionBuffer);
+    glTmp.bufferData(glTmp.ARRAY_BUFFER, new Float32Array(verticesPanorama), glTmp.STATIC_DRAW);
+    panoramaCanvas360VertexPositionBuffer.itemSize = 3;
+    panoramaCanvas360VertexPositionBuffer.numItems = vertices.length / 3;;
+
+    // Textures
+    panoramaCanvas360VertexTextureCoordBuffer = glTmp.createBuffer();
+    glTmp.bindBuffer(glTmp.ARRAY_BUFFER, panoramaCanvas360VertexTextureCoordBuffer);
+    glTmp.bufferData(glTmp.ARRAY_BUFFER, new Float32Array(textureCoordsPanorama), glTmp.STATIC_DRAW);
+    panoramaCanvas360VertexTextureCoordBuffer.itemSize = 2;
+    panoramaCanvas360VertexTextureCoordBuffer.numItems = 4;
+
+    // Vertex indices
+    panoramaCanvas360VertexIndexBuffer = glTmp.createBuffer();
+    glTmp.bindBuffer(glTmp.ELEMENT_ARRAY_BUFFER, panoramaCanvas360VertexIndexBuffer);
+    glTmp.bufferData(glTmp.ELEMENT_ARRAY_BUFFER, new Uint16Array(vertexIndicesPanorama), glTmp.STATIC_DRAW);
+    panoramaCanvas360VertexIndexBuffer.itemSize = 1;
+    panoramaCanvas360VertexIndexBuffer.numItems = vertexIndicesPanorama.length;
 }
 
 //----------------------------------------------------------------------------
@@ -641,7 +668,7 @@ function drawModelMap(angleXX, angleYY, angleZZ,
     gl.drawElements(gl.TRIANGLES, cubeVertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
 }
 
-function drawModelPanorama(angleXX, angleYY, angleZZ,
+function drawModelPanorama(glTmp, angleXX, angleYY, angleZZ,
     sx, sy, sz,
     tx, ty, tz,
     mvMatrix,
@@ -660,32 +687,79 @@ function drawModelPanorama(angleXX, angleYY, angleZZ,
 
     mvMatrix = mult(mvMatrix, scalingMatrix(sx, sy, sz));
 
-    gl.useProgram(shaderPrograms['Panorama']);
+    glTmp.useProgram(shaderPrograms['Panorama']);
 
     // Passing the Model View Matrix to apply the current transformation
-    var mvUniform = gl.getUniformLocation(shaderPrograms['Panorama'], "uMVMatrix");
-    gl.uniformMatrix4fv(mvUniform, false, new Float32Array(flatten(mvMatrix)));
+    var mvUniform = glTmp.getUniformLocation(shaderPrograms['Panorama'], "uMVMatrix");
+    glTmp.uniformMatrix4fv(mvUniform, false, new Float32Array(flatten(mvMatrix)));
 
     // Passing the Projection Matrix to apply the current projection
-    var pUniform = gl.getUniformLocation(shaderPrograms['Panorama'], "uPMatrix");
-    gl.uniformMatrix4fv(pUniform, false, new Float32Array(flatten(pMatrix)));
+    var pUniform = glTmp.getUniformLocation(shaderPrograms['Panorama'], "uPMatrix");
+    glTmp.uniformMatrix4fv(pUniform, false, new Float32Array(flatten(pMatrix)));
 
     // Passing the buffers
-    gl.bindBuffer(gl.ARRAY_BUFFER, panoramaVertexPositionBuffer);
-    gl.vertexAttribPointer(shaderPrograms['Panorama'].vertexPositionAttribute, panoramaVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+    glTmp.bindBuffer(glTmp.ARRAY_BUFFER, panoramaVertexPositionBuffer);
+    glTmp.vertexAttribPointer(shaderPrograms['Panorama'].vertexPositionAttribute, panoramaVertexPositionBuffer.itemSize, glTmp.FLOAT, false, 0, 0);
 
     // NEW --- Textures
-    gl.bindBuffer(gl.ARRAY_BUFFER, panoramaVertexTextureCoordBuffer);
-    gl.vertexAttribPointer(shaderPrograms['Panorama'].textureCoordAttribute, panoramaVertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
-    gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D, webGLTexturePanorama);
-    gl.uniform1i(shaderPrograms['Panorama'].samplerUniform, 0);
+    glTmp.bindBuffer(glTmp.ARRAY_BUFFER, panoramaVertexTextureCoordBuffer);
+    glTmp.vertexAttribPointer(shaderPrograms['Panorama'].textureCoordAttribute, panoramaVertexTextureCoordBuffer.itemSize, glTmp.FLOAT, false, 0, 0);
+    glTmp.activeTexture(glTmp.TEXTURE0);
+    glTmp.bindTexture(glTmp.TEXTURE_2D, webGLTexturePanorama);
+    glTmp.uniform1i(shaderPrograms['Panorama'].samplerUniform, 0);
 
     // The vertex indices
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, panoramaVertexIndexBuffer);
+    glTmp.bindBuffer(glTmp.ELEMENT_ARRAY_BUFFER, panoramaVertexIndexBuffer);
 
     // Drawing the triangles --- NEW --- DRAWING ELEMENTS 
-    gl.drawElements(gl.TRIANGLES, panoramaVertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
+    glTmp.drawElements(glTmp.TRIANGLES, panoramaVertexIndexBuffer.numItems, glTmp.UNSIGNED_SHORT, 0);
+}
+
+function drawModelPanoramaCanvas360(glTmp, angleXX, angleYY, angleZZ,
+    sx, sy, sz,
+    tx, ty, tz,
+    mvMatrix,
+    pMatrix,
+    primitiveType) {
+
+    // Pay attention to transformation order !!
+
+    mvMatrix = mult(mvMatrix, translationMatrix(tx, ty, tz));
+
+    mvMatrix = mult(mvMatrix, rotationZZMatrix(angleZZ));
+
+    mvMatrix = mult(mvMatrix, rotationYYMatrix(angleYY));
+
+    mvMatrix = mult(mvMatrix, rotationXXMatrix(angleXX));
+
+    mvMatrix = mult(mvMatrix, scalingMatrix(sx, sy, sz));
+
+    glTmp.useProgram(shaderPrograms['PanoramaCanvas360']);
+
+    // Passing the Model View Matrix to apply the current transformation
+    var mvUniform = glTmp.getUniformLocation(shaderPrograms['PanoramaCanvas360'], "uMVMatrix");
+    glTmp.uniformMatrix4fv(mvUniform, false, new Float32Array(flatten(mvMatrix)));
+
+    // Passing the Projection Matrix to apply the current projection
+    var pUniform = glTmp.getUniformLocation(shaderPrograms['PanoramaCanvas360'], "uPMatrix");
+    glTmp.uniformMatrix4fv(pUniform, false, new Float32Array(flatten(pMatrix)));
+
+    // Passing the buffers
+    glTmp.bindBuffer(glTmp.ARRAY_BUFFER, panoramaCanvas360VertexPositionBuffer);
+    glTmp.vertexAttribPointer(shaderPrograms['PanoramaCanvas360'].vertexPositionAttribute, panoramaCanvas360VertexPositionBuffer.itemSize, glTmp.FLOAT, false, 0, 0);
+
+    // NEW --- Textures
+    glTmp.bindBuffer(glTmp.ARRAY_BUFFER, panoramaCanvas360VertexTextureCoordBuffer);
+    glTmp.vertexAttribPointer(shaderPrograms['PanoramaCanvas360'].textureCoordAttribute, panoramaCanvas360VertexTextureCoordBuffer.itemSize, glTmp.FLOAT, false, 0, 0);
+    glTmp.activeTexture(glTmp.TEXTURE0);
+    glTmp.bindTexture(glTmp.TEXTURE_2D, webGLTexturePanorama);
+    glTmp.uniform1i(shaderPrograms['PanoramaCanvas360'].samplerUniform, 0);
+
+    // The vertex indices
+    glTmp.bindBuffer(glTmp.ELEMENT_ARRAY_BUFFER, panoramaCanvas360VertexIndexBuffer);
+
+    // Drawing the triangles --- NEW --- DRAWING ELEMENTS 
+    glTmp.drawElements(glTmp.TRIANGLES, panoramaCanvas360VertexIndexBuffer.numItems, glTmp.UNSIGNED_SHORT, 0);
 }
 
 //----------------------------------------------------------------------------
@@ -699,6 +773,7 @@ function drawScene() {
 	var mvMatrix = mat4();
 	
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    gl_360.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 	
 	if( projectionType == 0 ) {
 		pMatrix = ortho( -1.0, 1.0, -1.0, 1.0, -1.0, 1.0 );
@@ -783,7 +858,15 @@ function drawScene() {
         primitiveType);
 
     // Panorama
-    drawModelPanorama(-angleXXPanorama, -angleYYPanorama, -angleZZPanorama,
+    drawModelPanorama(gl, -angleXXPanorama, -angleYYPanorama, -angleZZPanorama,
+        sx, sy, sz,
+        tx, ty, tzPanorama,
+        mvMatrix,
+        pMatrix,
+        primitiveType);
+
+    // Panorama canvas 360
+    drawModelPanoramaCanvas360(gl_360, -angleXXPanorama, -angleYYPanorama, -angleZZPanorama,
         sx, sy, sz,
         tx, ty, tzPanorama,
         mvMatrix,
@@ -972,24 +1055,30 @@ function onDown(event) {
     if (isDisplayingMap) {
         isDisplayingMap = 0;
         if ((posx > 623 && posx < 635) && (posy > 225 && posy < 619)) {
+            initTexturePanorama(gl, 'Panorama', "Photos/DMAT-11(2).jpg");
+            initTexturePanorama(gl_360, 'PanoramaCanvas360', "Photos/DMAT-11(2).jpg");
             tzPanorama = 0.0;
-            initTexturePanorama("Photos/DMAT-11(2).jpg");
         }
         else if ((posx > 606 && posx < 622) && (posy > 236 && posy < 645)) {
+            initTexturePanorama(gl, 'Panorama', "Photos/DCPT-12.jpg");
+            initTexturePanorama(gl_360, 'PanoramaCanvas360', "Photos/DCPT-12.jpg");
             tzPanorama = 0.0;
-            initTexturePanorama("Photos/DCPT-12.jpg");
         }
         else if ((posx > 577 && posx < 603) && (posy > 253 && posy < 264)) {
+            initTexturePanorama(gl, 'Panorama', "Photos/DMEC-22.jpg");
+            initTexturePanorama(gl_360, 'PanoramaCanvas360', "Photos/DMEC-22.jpg");
             tzPanorama = 0.0;
-            initTexturePanorama("Photos/DMEC-22.jpg");
         }
         else if ((posx > 549 && posx < 579) && (posy > 279 && posy < 291)) {
+            initTexturePanorama(gl, 'Panorama', "Photos/DEC-28.jpg");
+            initTexturePanorama(gl_360, 'PanoramaCanvas360', "Photos/DEC-28.jpg");
             tzPanorama = 0.0;
-            initTexturePanorama("Photos/DEC-28.jpg");
         }
+        
     } else {
         isDisplayingMap = 1;
         if ((posx < 100) && (posy < 100)) {
+            initTextureMap(gl);
             tzPanorama = 5.0;
         }
     }
@@ -1005,14 +1094,14 @@ function getClickCanvas() {
 	cnvs.addEventListener('mousedown',onDown,false);
 }
 
-function initWebGL( canvas, canvas2) {
+function initWebGL( canvas) {
 	try {
 		
 		// Create the WebGL context
 		
 		// Some browsers still need "experimental-webgl"
 		
-        gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+        var glTmp = canvas.getContext("webgl");
 		
 		// DEFAULT: The viewport occupies the whole canvas 
 		
@@ -1020,17 +1109,19 @@ function initWebGL( canvas, canvas2) {
 		
 		// NEW - Drawing the triangles defining the model
 		
-		primitiveType = gl.TRIANGLES;
+        primitiveType = glTmp.TRIANGLES;
 		
 		// DEFAULT: The Depth-Buffer is DISABLED
 		
 		// Enable it !
 		
-        gl.enable(gl.DEPTH_TEST);
+        glTmp.enable(glTmp.DEPTH_TEST);
+
+        return glTmp;
 		
 	} catch (e) {
 	}
-	if (!gl) {
+    if (!glTmp) {
 		alert("Could not initialise WebGL, sorry! :-(");
 	}        
 }
@@ -1060,12 +1151,15 @@ function runWebGL() {
     }
 
     var canvas = document.getElementById("my-canvas");
-    var canvas2 = document.getElementById("360-canvas");
-    initWebGL(canvas, canvas2);
+    var canvas_360 = document.getElementById("360-canvas");
+
+    gl = initWebGL(canvas);
+    gl_360 = initWebGL(canvas_360);
 
     shaderPrograms['ButtonsSpheres'] = initShadersButtonsSpheres(gl);
     shaderPrograms['Map'] = initShadersMap(gl);
     shaderPrograms['Panorama'] = initShadersPanorama(gl);
+    shaderPrograms['PanoramaCanvas360'] = initShadersPanorama(gl_360);
 
     centroidRefinement(vertices, 6);
     moveToSphericalSurface(vertices);
@@ -1075,10 +1169,11 @@ function runWebGL() {
 
     initBuffersButtonsSpheres();
     initBuffersMap();
-    initBuffersPanorama();
+    initBuffersPanorama(gl);
+    initBuffersPanoramaCanvas360(gl_360);
 
-    initTextureMap();
-    initTexturePanorama("Photos/DCPT-12.jpg");
+    initTextureMap(gl);
+    //initTexturePanorama("Photos/DCPT-12.jpg"); Textura é inicializada ao clicar  numa esfera
     
     tick();		// A timer controls the rendering / animation  
 
