@@ -40,6 +40,7 @@ var tx = 0.0;
 var ty = 0.0;
 var tz = 0.0;
 var tzPanorama = 5.0;
+var tzPanoramaCanvas360 = 0.0;
 
 // The rotation angles in degrees
 var angleXX = 0.0;
@@ -51,10 +52,15 @@ var angleXXPanorama = 0.0;
 var angleYYPanorama = 0.0;
 var angleZZPanorama = 0.0;
 
+// The rotation angles in degrees of panorama photos in canvas 360
+var angleXXPanoramaCanvas360 = 0.0;
+var angleYYPanoramaCanvas360 = 0.0;
+var angleZZPanoramaCanvas360 = 0.0;
+
 // The scaling factors
-var sx = 0.25;
-var sy = 0.25;
-var sz = 0.25;
+var sx = 0.35;
+var sy = 0.35;
+var sz = 0.35;
 
 // NEW - Animation controls
 var rotationXX_ON = 0;
@@ -517,7 +523,7 @@ function drawScene() {
 	var mvMatrix = mat4();
 	
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    gl_360.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    //gl_360.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 	
 	if( projectionType == 0 ) {
 		pMatrix = ortho( -1.0, 1.0, -1.0, 1.0, -1.0, 1.0 );
@@ -610,9 +616,9 @@ function drawScene() {
         primitiveType);
 
     // Panorama canvas 360
-    drawModelPanoramaCanvas360(gl_360, -angleXXPanorama, -angleYYPanorama, -angleZZPanorama,
+    drawModelPanoramaCanvas360(gl_360, -angleXXPanoramaCanvas360, -angleYYPanoramaCanvas360, -angleZZPanoramaCanvas360,
         sx, sy, sz,
-        tx, ty, tzPanorama,
+        tx, ty, tzPanoramaCanvas360,
         mvMatrix,
         pMatrix,
         primitiveType);
@@ -638,17 +644,17 @@ function animate() {
 		
 		if( rotationXX_ON ) {
 
-			angleXX += rotationXX_DIR * rotationXX_SPEED * (45 * elapsed) / 1000.0;
+			angleXX += rotationXX_DIR * rotationXX_SPEED * (90 * elapsed) / 1000.0;
 	    }
 
 		if( rotationYY_ON ) {
 
-			angleYY += rotationYY_DIR * rotationYY_SPEED * (45 * elapsed) / 1000.0;
+			angleYY += rotationYY_DIR * rotationYY_SPEED * (90 * elapsed) / 1000.0;
 	    }
 
 		if( rotationZZ_ON ) {
 
-			angleZZ += rotationZZ_DIR * rotationZZ_SPEED * (45 * elapsed) / 1000.0;
+			angleZZ += rotationZZ_DIR * rotationZZ_SPEED * (90 * elapsed) / 1000.0;
 	    }
 	}
 	
@@ -708,58 +714,6 @@ function handleKeys() {
 		rotationXX_SPEED += 0.25;
 	}
 }
-//----------------------------------------------------------------------------
-
-// Handling mouse events
-
-// Adapted from www.learningwebgl.com
-
-
-var mouseDown = false;
-
-var lastMouseX = null;
-
-var lastMouseY = null;
-
-function handleMouseDown(event) {
-
-    mouseDown = true;
-
-    lastMouseX = event.clientX;
-
-    lastMouseY = event.clientY;
-}
-
-function handleMouseUp(event) {
-
-    mouseDown = false;
-}
-
-function handleMouseMove(event) {
-
-    if (!mouseDown) {
-
-        return;
-    }
-
-    // Rotation angles proportional to cursor displacement
-
-    var newX = event.clientX;
-
-    var newY = event.clientY;
-
-    var deltaX = newX - lastMouseX;
-
-    angleYYPanorama += radians(10 * deltaX)
-
-    var deltaY = newY - lastMouseY;
-
-    angleXXPanorama += radians(10 * deltaY)
-
-    lastMouseX = newX
-
-    lastMouseY = newY;
-}
 
 // Timer
 
@@ -771,75 +725,9 @@ function tick() {
 	animate();
 }
 
-function setEventListeners( canvas ){
 
-    function handleKeyDown(event) {
-        currentlyPressedKeys[event.keyCode] = true;
-    }
 
-    function handleKeyUp(event) {
-        currentlyPressedKeys[event.keyCode] = false;
-    }
 
-	document.onkeydown = handleKeyDown;
-    document.onkeyup = handleKeyUp;
-
-    canvas.onmousedown = handleMouseDown;
-    document.onmouseup = handleMouseUp;
-    document.onmousemove = handleMouseMove;
-
-}
-
-function onDown(event) {
-    var cnvs = document.getElementById('my-canvas');
-    var posy = event.pageY - cnvs.offsetTop;
-    var posx = event.pageX - cnvs.offsetLeft;
-    console.log("x" + posx);
-    console.log("y" + posy);
-    if (isDisplayingMap) {
-        if ((posx > 623 && posx < 635) && (posy > 225 && posy < 619) && display_department.includes("DMAT")) {
-            isDisplayingMap = false;
-            initTexturePanorama(gl, 'Panorama', "Photos/DMAT-11(2).jpg");
-            initTexturePanoramaCanvas360(gl_360, 'PanoramaCanvas360', "Photos/DMAT-11(2).jpg");
-            tzPanorama = 0.0;
-        }
-        else if ((posx > 606 && posx < 622) && (posy > 236 && posy < 645) && display_department.includes("DCPT")) {
-            isDisplayingMap = false;
-            initTexturePanorama(gl, 'Panorama', "Photos/DCPT-12.jpg");
-            initTexturePanoramaCanvas360(gl_360, 'PanoramaCanvas360', "Photos/DCPT-12.jpg");
-            tzPanorama = 0.0;
-        }
-        else if ((posx > 577 && posx < 603) && (posy > 253 && posy < 264)  && display_department.includes("DMEC")) {
-            isDisplayingMap = false;
-            initTexturePanorama(gl, 'Panorama', "Photos/DMEC-22.jpg");
-            initTexturePanoramaCanvas360(gl_360, 'PanoramaCanvas360', "Photos/DMEC-22.jpg");
-            tzPanorama = 0.0;
-        }
-        else if ((posx > 549 && posx < 579) && (posy > 279 && posy < 291)  && display_department.includes("DEC")) {
-            isDisplayingMap = false;
-            initTexturePanorama(gl, 'Panorama', "Photos/DEC-28.jpg");
-            initTexturePanoramaCanvas360(gl_360, 'PanoramaCanvas360', "Photos/DEC-28.jpg");
-            tzPanorama = 0.0;
-        }
-        
-    } else {
-        if ((posx < 100) && (posy < 100)) {
-            isDisplayingMap = true;
-            //initTextureMap(gl);
-            tzPanorama = 5.0;
-        }
-    }
-    console.log("tzPanorama" + tzPanorama);
-    /*
-    str = posx+", "+posy;
-    alert(str);*/
-}
-
-function getClickCanvas() {
-	var cnvs = document.getElementById('my-canvas');
-	var context = cnvs.getContext('2d');
-	cnvs.addEventListener('mousedown',onDown,false);
-}
 
 function initWebGL( canvas) {
 	try {
@@ -913,6 +801,7 @@ function runWebGL() {
     computeVertexNormals(vertices, normals);
 
     setEventListeners(canvas);
+    setEventListenersCanvas360(canvas_360);
 
     initBuffersButtonsSpheres();
     initBuffersMap();

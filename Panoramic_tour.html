@@ -149,7 +149,7 @@
         gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
         // For the fragment shader
         vTextureCoord = aTextureCoord;
-        } 
+        }
     </script>
 
     <!-- Maybe this shader can be removed -->
@@ -171,6 +171,9 @@
 
     <!-- Processing triangle mesh models -->
     <script type="text/javascript" src="models.js"></script>
+
+    <!-- Eventos de rato e teclado -->
+    <script type="text/javascript" src="events.js"></script>
 
     <!-- WebGL code -->
     <script type="text/javascript" src="initShaders.js"></script>
