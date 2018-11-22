@@ -147,6 +147,18 @@ function handleLoadedTexture(gl, texture) {
 	gl.bindTexture(gl.TEXTURE_2D, null);
 }
 
+function handleLoadedTexturePanorama(glTmp, texture) {
+
+    glTmp.bindTexture(glTmp.TEXTURE_2D, texture);
+    glTmp.pixelStorei(glTmp.UNPACK_FLIP_Y_WEBGL, true);
+    glTmp.texImage2D(glTmp.TEXTURE_2D, 0, glTmp.RGBA, glTmp.RGBA, glTmp.UNSIGNED_BYTE, texture.image);
+    glTmp.texParameteri(glTmp.TEXTURE_2D, glTmp.TEXTURE_MAG_FILTER, glTmp.LINEAR);
+    glTmp.texParameteri(glTmp.TEXTURE_2D, glTmp.TEXTURE_MIN_FILTER, glTmp.LINEAR);
+    glTmp.texParameteri(glTmp.TEXTURE_2D, glTmp.TEXTURE_WRAP_S, glTmp.CLAMP_TO_EDGE);
+    glTmp.texParameteri(glTmp.TEXTURE_2D, glTmp.TEXTURE_WRAP_T, glTmp.CLAMP_TO_EDGE);
+    glTmp.bindTexture(glTmp.TEXTURE_2D, null);
+}
+
 var webGLTextureMap;
 function initTextureMap(gl) {
     gl.useProgram(shaderPrograms['Map']);
@@ -159,14 +171,25 @@ function initTextureMap(gl) {
 }
 
 var webGLTexturePanorama;
-function initTexturePanorama(gl, shaderName, picturePath) {
-    gl.useProgram(shaderPrograms[shaderName]);
-    webGLTexturePanorama = gl.createTexture();
+function initTexturePanorama(glTmp, shaderName, picturePath) {
+    glTmp.useProgram(shaderPrograms[shaderName]);
+    webGLTexturePanorama = glTmp.createTexture();
     webGLTexturePanorama.image = new Image();
     webGLTexturePanorama.image.onload = function () {
-        handleLoadedTexture(gl, webGLTexturePanorama)
+        handleLoadedTexturePanorama(glTmp, webGLTexturePanorama)
     }
     webGLTexturePanorama.image.src = picturePath;
+}
+
+var webGLTexturePanoramaCanvas360;
+function initTexturePanoramaCanvas360(glTmp, shaderName, picturePath) {
+    glTmp.useProgram(shaderPrograms[shaderName]);
+    webGLTexturePanoramaCanvas360 = glTmp.createTexture();
+    webGLTexturePanoramaCanvas360.image = new Image();
+    webGLTexturePanoramaCanvas360.image.onload = function () {
+        handleLoadedTexturePanorama(glTmp, webGLTexturePanoramaCanvas360)
+    }
+    webGLTexturePanoramaCanvas360.image.src = picturePath;
 }
 
 //----------------------------------------------------------------------------
@@ -473,7 +496,7 @@ function drawModelPanoramaCanvas360(glTmp, angleXX, angleYY, angleZZ,
     glTmp.bindBuffer(glTmp.ARRAY_BUFFER, panoramaCanvas360VertexTextureCoordBuffer);
     glTmp.vertexAttribPointer(shaderPrograms['PanoramaCanvas360'].textureCoordAttribute, panoramaCanvas360VertexTextureCoordBuffer.itemSize, glTmp.FLOAT, false, 0, 0);
     glTmp.activeTexture(glTmp.TEXTURE0);
-    glTmp.bindTexture(glTmp.TEXTURE_2D, webGLTexturePanorama);
+    glTmp.bindTexture(glTmp.TEXTURE_2D, webGLTexturePanoramaCanvas360);
     glTmp.uniform1i(shaderPrograms['PanoramaCanvas360'].samplerUniform, 0);
 
     // The vertex indices
@@ -777,32 +800,32 @@ function onDown(event) {
         if ((posx > 623 && posx < 635) && (posy > 225 && posy < 619) && display_department.includes("DMAT")) {
             isDisplayingMap = false;
             initTexturePanorama(gl, 'Panorama', "Photos/DMAT-11(2).jpg");
-            initTexturePanorama(gl_360, 'PanoramaCanvas360', "Photos/DMAT-11(2).jpg");
+            initTexturePanoramaCanvas360(gl_360, 'PanoramaCanvas360', "Photos/DMAT-11(2).jpg");
             tzPanorama = 0.0;
         }
         else if ((posx > 606 && posx < 622) && (posy > 236 && posy < 645) && display_department.includes("DCPT")) {
             isDisplayingMap = false;
             initTexturePanorama(gl, 'Panorama', "Photos/DCPT-12.jpg");
-            initTexturePanorama(gl_360, 'PanoramaCanvas360', "Photos/DCPT-12.jpg");
+            initTexturePanoramaCanvas360(gl_360, 'PanoramaCanvas360', "Photos/DCPT-12.jpg");
             tzPanorama = 0.0;
         }
         else if ((posx > 577 && posx < 603) && (posy > 253 && posy < 264)  && display_department.includes("DMEC")) {
             isDisplayingMap = false;
             initTexturePanorama(gl, 'Panorama', "Photos/DMEC-22.jpg");
-            initTexturePanorama(gl_360, 'PanoramaCanvas360', "Photos/DMEC-22.jpg");
+            initTexturePanoramaCanvas360(gl_360, 'PanoramaCanvas360', "Photos/DMEC-22.jpg");
             tzPanorama = 0.0;
         }
         else if ((posx > 549 && posx < 579) && (posy > 279 && posy < 291)  && display_department.includes("DEC")) {
             isDisplayingMap = false;
             initTexturePanorama(gl, 'Panorama', "Photos/DEC-28.jpg");
-            initTexturePanorama(gl_360, 'PanoramaCanvas360', "Photos/DEC-28.jpg");
+            initTexturePanoramaCanvas360(gl_360, 'PanoramaCanvas360', "Photos/DEC-28.jpg");
             tzPanorama = 0.0;
         }
         
     } else {
         if ((posx < 100) && (posy < 100)) {
             isDisplayingMap = true;
-            initTextureMap(gl);
+            //initTextureMap(gl);
             tzPanorama = 5.0;
         }
     }
