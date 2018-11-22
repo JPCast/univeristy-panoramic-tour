@@ -547,7 +547,7 @@ function drawScene() {
         // Instance --- Departamento de matemática
         drawModelButtonsSpheres(angleXX, -angleYY, -angleZZ,  // CW rotations
             sx * 0.1, sy * 0.1, sz * 0.1,
-            tx + 0.1, ty + 0.30, tz,
+            tx + 0.14, ty + 0.43, tz,
             mvMatrix,
             pMatrix,
             primitiveType);
@@ -557,7 +557,7 @@ function drawScene() {
         // Instance --- Departamento Território
         drawModelButtonsSpheres(angleXX, -angleYY, -angleZZ,  // CW rotations
             sx * 0.11, sy * 0.11, sz * 0.11,
-            tx + 0.07, ty + 0.25, tz,
+            tx + 0.10, ty + 0.35, tz,
             mvMatrix,
             pMatrix,
             primitiveType);
@@ -567,37 +567,91 @@ function drawScene() {
     	// Instance --- Departamento mecanica
     	drawModelButtonsSpheres( angleXX, -angleYY, angleZZ, 
             sx * 0.12, sy * 0.12, sz * 0.12,
-    	           tx + 0.03, ty + 0.20, tz,
+    	           tx + 0.06, ty + 0.28, tz,
             mvMatrix,
             pMatrix,
     	           primitiveType );
     }
 	
-    if(display_department.includes("DEG")){
+    if(display_department.includes("DEC")){
         // Instance --- Departamento ???
         drawModelButtonsSpheres( angleXX, -angleYY, -angleZZ, 
             sx * 0.13, sy * 0.13, sz * 0.13,
-                   tx - 0.02, ty + 0.12, tz,
+                   tx + 0.0, ty + 0.18, tz,
             mvMatrix,
             pMatrix,
                    primitiveType );
     }
 
-    // Instance --- civil ???
-    drawModelButtonsSpheres( angleXX, -angleYY, angleZZ,  // CW rotations
-        sx * 0.14, sy * 0.14, sz * 0.14,
-               tx - 0.08, ty + 0.04, tz,
-        mvMatrix,
-               pMatrix,
-        primitiveType);
+    if(display_department.includes("DG")){
+        // Instance --- civil ???
+        drawModelButtonsSpheres( angleXX, -angleYY, angleZZ,  // CW rotations
+            sx * 0.14, sy * 0.14, sz * 0.14,
+                   tx - 0.07, ty + 0.08, tz,
+            mvMatrix,
+                   pMatrix,
+            primitiveType);
+    }
 
-    // Instance --- Departamento ???
-    drawModelButtonsSpheres(angleXX, -angleYY, angleZZ,  // CW rotations
-        sx * 0.15, sy * 0.15, sz * 0.15,
-        tx - 0.16, ty - 0.08, tz,
-        mvMatrix,
-        pMatrix,
-        primitiveType);
+    if(display_department.includes("CCCI")){
+        // Instance --- Departamento ???
+        drawModelButtonsSpheres(angleXX, -angleYY, angleZZ,  // CW rotations
+            sx * 0.15, sy * 0.15, sz * 0.15,
+            tx - 0.16, ty - 0.08, tz,
+            mvMatrix,
+            pMatrix,
+            primitiveType);
+    }
+
+    if(display_department.includes("DEGEIT")){
+        // Instance --- Departamento de matemática
+        drawModelButtonsSpheres(angleXX, -angleYY, -angleZZ,  // CW rotations
+            sx * 0.1, sy * 0.1, sz * 0.1,
+            tx + 0.28, ty + 0.35, tz,
+            mvMatrix,
+            pMatrix,
+            primitiveType);
+    }
+
+    if(display_department.includes("CICFANO")){
+        // Instance --- Departamento Território
+        drawModelButtonsSpheres(angleXX, -angleYY, -angleZZ,  // CW rotations
+            sx * 0.11, sy * 0.11, sz * 0.11,
+            tx + 0.25, ty + 0.27, tz,
+            mvMatrix,
+            pMatrix,
+            primitiveType);
+    }
+
+    if(display_department.includes("DF")){
+        // Instance --- Departamento mecanica
+        drawModelButtonsSpheres( angleXX, -angleYY, angleZZ, 
+            sx * 0.12, sy * 0.12, sz * 0.12,
+                   tx + 0.20, ty + 0.16, tz,
+            mvMatrix,
+            pMatrix,
+                   primitiveType );
+    }
+    
+    if(display_department.includes("CLT")){
+        // Instance --- Departamento ???
+        drawModelButtonsSpheres( angleXX, -angleYY, -angleZZ, 
+            sx * 0.13, sy * 0.13, sz * 0.13,
+                   tx + 0.15, ty + 0.02, tz,
+            mvMatrix,
+            pMatrix,
+                   primitiveType );
+    }
+
+    if(display_department.includes("DQ")){
+        // Instance --- civil ???
+        drawModelButtonsSpheres( angleXX, -angleYY, angleZZ,  // CW rotations
+            sx * 0.14, sy * 0.14, sz * 0.14,
+                   tx + 0.08, ty - 0.2, tz,
+            mvMatrix,
+                   pMatrix,
+            primitiveType);
+    }
 
     // Map
     drawModelMap(0.0, 0.0, 0.0,
@@ -766,7 +820,7 @@ function getValue(){
         display_department = '';
     }
     var checks = document.getElementsByClassName('checks');
-    for ( i = 0; i < 4; i++) {
+    for ( i = 0; i < 11; i++) {
         if ( checks[i].checked === true ) {
             display_department += checks[i].value + " ";
         }
@@ -780,7 +834,7 @@ function getValue(){
 var shaderPrograms = [];
 function runWebGL() {
     var checks = document.getElementsByClassName('checks');
-    for ( i = 0; i < 4; i++) {
+    for ( i = 0; i < 11; i++) {
         checks[i].checked = true;
         display_department += checks[i].value + " ";
     }
