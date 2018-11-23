@@ -924,17 +924,12 @@ function initWebGL(canvas) {
 }
 
 function getValue() {
-    if (turn == 1) {
-        display_department = '';
-    }
+    display_department = '';
     var checks = document.getElementsByClassName('checks');
     for (i = 0; i < 11; i++) {
         if (checks[i].checked === true) {
             display_department += checks[i].value + " ";
         }
-    }
-    if (turn == 0) {
-        turn = 1;
     }
 }
 
