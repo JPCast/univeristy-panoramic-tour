@@ -876,6 +876,7 @@ function tick() {
     var toggle = document.getElementById('toggle-switch');
     if(toggle.checked){
         document.getElementById("360 view").innerHTML = "360 degrees View";
+        tzPanorama = 5;
         tzPanoramaCanvas360 = 0;
     }
     else{
