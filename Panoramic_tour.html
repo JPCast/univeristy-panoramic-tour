@@ -199,7 +199,7 @@
 	  <a href="#" onclick="getValue();return false;">Submeter</a>
       <p>Display panoramic view in canvas bellow
 	  <label class="switch">
-        <input type="checkbox" checked>
+        <input id='toggle-switch' type="checkbox" unchecked>
         <span class="slider round"></span>
       </label>
       </p>
@@ -223,9 +223,8 @@
 
         <h3>Mapa da Universidade</h3>
         <canvas id="my-canvas" width="1150" height="650"></canvas>
-
-        <p> Vista 360 </p>
-        <canvas id="360-canvas" style="border:10px solid #FFFFFF;" width="1150" height="650"></canvas>
+        <p id="360 view"></p>
+        <canvas id="360-canvas" width="1150" height="650"></canvas>
 
     </div>
 
