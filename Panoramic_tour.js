@@ -39,6 +39,7 @@ var globalRotationYY_SPEED = 1;
 var tx = 0.0;
 var ty = 0.0;
 var tz = 0.0;
+var tzButtonX = 0.0;
 var tzPanorama = 5.0;
 var tzPanoramaCanvas360 = 0.0;
 
@@ -226,6 +227,33 @@ function initBuffersButtonsSpheres() {
         gl.FLOAT, false, 0, 0);
 }
 
+function initBuffersButtonX() {
+    gl.useProgram(shaderPrograms['ButtonsSpheres']);
+    // Vertex Coordinates
+    buttonXVertexPositionBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buttonXVertexPositionBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verticesXButton), gl.STATIC_DRAW);
+    buttonXVertexPositionBuffer.itemSize = 3;
+    buttonXVertexPositionBuffer.numItems = verticesXButton.length / 3;
+    // Associating to the vertex shader
+    gl.vertexAttribPointer(shaderPrograms['ButtonsSpheres'].vertexPositionAttribute,
+        buttonXVertexPositionBuffer.itemSize,
+        gl.FLOAT, false, 0, 0);
+
+
+
+    // Vertex Normal Vectors
+    buttonXVertexNormalBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buttonXVertexNormalBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normalsXButton), gl.STATIC_DRAW);
+    buttonXVertexNormalBuffer.itemSize = 3;
+    buttonXVertexNormalBuffer.numItems = normalsXButton.length / 3;
+    // Associating to the vertex shader
+    gl.vertexAttribPointer(shaderPrograms['ButtonsSpheres'].vertexNormalAttribute,
+        buttonXVertexNormalBuffer.itemSize,
+        gl.FLOAT, false, 0, 0);
+}
+
 function initBuffersMap() {
     gl.useProgram(shaderPrograms['Map']);
     // Coordinates
@@ -365,6 +393,72 @@ function drawModelButtonsSpheres(angleXX, angleYY, angleZZ,
     }
     else {
         gl.drawArrays(primitiveType, 0, triangleVertexPositionBuffer.numItems);
+    }
+}
+
+function drawModelButtonX(angleXX, angleYY, angleZZ,
+    sx, sy, sz,
+    tx, ty, tz,
+    mvMatrix,
+    pMatrix,
+    primitiveType) {
+    // Pay attention to transformation order !!
+    mvMatrix = mult(mvMatrix, translationMatrix(tx, ty, tz));
+    mvMatrix = mult(mvMatrix, rotationZZMatrix(angleZZ));
+    mvMatrix = mult(mvMatrix, rotationYYMatrix(angleYY));
+    mvMatrix = mult(mvMatrix, rotationXXMatrix(angleXX));
+    mvMatrix = mult(mvMatrix, scalingMatrix(sx, sy, sz));
+
+    gl.useProgram(shaderPrograms['ButtonsSpheres']);
+    // Passing the Model View Matrix to apply the current transformation
+    var mvUniform = gl.getUniformLocation(shaderPrograms['ButtonsSpheres'], "uMVMatrix");
+    gl.uniformMatrix4fv(mvUniform, false, new Float32Array(flatten(mvMatrix)));
+
+    // Passing the Projection Matrix to apply the current projection
+    var pUniform = gl.getUniformLocation(shaderPrograms['ButtonsSpheres'], "uPMatrix");
+    gl.uniformMatrix4fv(pUniform, false, new Float32Array(flatten(pMatrix)));
+
+    // Multiplying the reflection coefficents
+    var ambientProduct = mult(kAmbi, ambient_Illumination);
+    var diffuseProduct = mult(kDiff, int_Light_Source);
+    var specularProduct = mult(kSpec, int_Light_Source);
+
+    // Associating the data to the vertex shader
+    // This can be done in a better way !!
+    // Vertex Coordinates and Vertex Normal Vectors
+    initBuffersButtonX();
+
+    // Partial illumonation terms and shininess Phong coefficient
+    gl.uniform3fv(gl.getUniformLocation(shaderPrograms['ButtonsSpheres'], "ambientProduct"),
+        flatten(ambientProduct));
+    gl.uniform3fv(gl.getUniformLocation(shaderPrograms['ButtonsSpheres'], "diffuseProduct"),
+        flatten(diffuseProduct));
+    gl.uniform3fv(gl.getUniformLocation(shaderPrograms['ButtonsSpheres'], "specularProduct"),
+        flatten(specularProduct));
+    gl.uniform1f(gl.getUniformLocation(shaderPrograms['ButtonsSpheres'], "shininess"),
+        nPhong);
+
+    // NEW --- Passing the viewer position to the vertex shader
+    gl.uniform4fv(gl.getUniformLocation(shaderPrograms['ButtonsSpheres'], "viewerPosition"),
+        flatten(pos_Viewer));
+
+    //Position of the Light Source
+    gl.uniform4fv(gl.getUniformLocation(shaderPrograms['ButtonsSpheres'], "lightPosition"),
+        flatten(pos_Light_Source));
+
+    // Drawing 
+    // primitiveType allows drawing as filled triangles / wireframe / vertices
+    if (primitiveType == gl.LINE_LOOP) {
+        // To simulate wireframe drawing!
+        // No faces are defined! There are no hidden lines!
+        // Taking the vertices 3 by 3 and drawing a LINE_LOOP
+        var i;
+        for (i = 0; i < buttonXVertexPositionBuffer.numItems / 3; i++) {
+            gl.drawArrays(primitiveType, 3 * i, 3);
+        }
+    }
+    else {
+        gl.drawArrays(primitiveType, 0, buttonXVertexPositionBuffer.numItems);
     }
 }
 
@@ -674,6 +768,13 @@ function drawScene() {
         pMatrix,
         primitiveType);
 
+    drawModelButtonX(0.0, angleYY, 0.0,
+        sx*0.007, sy*0.0125, sz*0.0125,
+        tx - 0.037, ty + 0.035, tzPanorama-0.1,
+        mvMatrix,
+        pMatrix,
+        primitiveType);
+    //tx-0.148, ty+0.14, tzButtonX-0.4,
 }
 
 //----------------------------------------------------------------------------
@@ -855,6 +956,7 @@ function runWebGL() {
     setEventListenersCanvas360(canvas_360);
 
     initBuffersButtonsSpheres();
+    initBuffersButtonX();
     initBuffersMap();
     initBuffersPanorama(gl);
     initBuffersPanoramaCanvas360(gl_360);
