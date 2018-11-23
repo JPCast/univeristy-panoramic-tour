@@ -18,7 +18,7 @@
 var isDisplayingMap = true;
 var gl = null; // WebGL context
 var gl_360 = null; // WebGL context
-var shaderProgram = null; 
+var shaderProgram = null;
 
 // NEW --- Buffers
 var triangleVertexPositionBuffer = null;
@@ -72,10 +72,10 @@ var rotationYY_SPEED = 1;
 var rotationZZ_ON = 0;
 var rotationZZ_DIR = 1;
 var rotationZZ_SPEED = 1;
- 
+
 // To allow choosing the way of drawing the model triangles
 var primitiveType = null;
- 
+
 // To allow choosing the projection type
 var projectionType = 1;
 
@@ -96,13 +96,10 @@ var ambient_Illumination = [0.3, 0.3, 0.3];
 // NEW --- Model Material Features
 // Ambient coef.
 var kAmbi = [0.2, 0.2, 0.2];
-
 // Diffuse coef.
 var kDiff = [0.6, 0.0, 0.6];
-
 // Specular coef.
 var kSpec = [0.7, 0.7, 0.7];
-
 // Phong coef.
 var nPhong = 100;
 */
@@ -118,15 +115,15 @@ var kSpec = [1.0, 1.0, 1.0];
 
 // Phong coef.
 var nPhong = 125.0;
- 
+
 // From learningwebgl.com
 
 // Initial model has just TWO TRIANGLES
 
 var display_department = '';
 var turn = 0;
-         
-         
+
+
 //----------------------------------------------------------------------------
 //
 // The WebGL code
@@ -142,15 +139,15 @@ var turn = 0;
 // From www.learningwebgl.com
 
 function handleLoadedTexture(gl, texture) {
-	
-	gl.bindTexture(gl.TEXTURE_2D, texture);
-	gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.image);
-	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.image);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-	gl.bindTexture(gl.TEXTURE_2D, null);
+    gl.bindTexture(gl.TEXTURE_2D, null);
 }
 
 function handleLoadedTexturePanorama(glTmp, texture) {
@@ -268,7 +265,7 @@ function initBuffersPanorama(glTmp) {
     glTmp.bufferData(glTmp.ARRAY_BUFFER, new Float32Array(textureCoordsPanorama), glTmp.STATIC_DRAW);
     panoramaVertexTextureCoordBuffer.itemSize = 2;
     panoramaVertexTextureCoordBuffer.numItems = 4;
-    
+
     // Vertex indices
     panoramaVertexIndexBuffer = glTmp.createBuffer();
     glTmp.bindBuffer(glTmp.ELEMENT_ARRAY_BUFFER, panoramaVertexIndexBuffer);
@@ -305,21 +302,21 @@ function initBuffersPanoramaCanvas360(glTmp) {
 
 //  Drawing the model
 
-function drawModelButtonsSpheres( angleXX, angleYY, angleZZ, 
-					sx, sy, sz,
-					tx, ty, tz,
-                    mvMatrix, 
-                    pMatrix,
-					primitiveType ) {
+function drawModelButtonsSpheres(angleXX, angleYY, angleZZ,
+    sx, sy, sz,
+    tx, ty, tz,
+    mvMatrix,
+    pMatrix,
+    primitiveType) {
     // Pay attention to transformation order !!
-	mvMatrix = mult( mvMatrix, translationMatrix( tx, ty, tz ) );
-	mvMatrix = mult( mvMatrix, rotationZZMatrix( angleZZ ) );
-	mvMatrix = mult( mvMatrix, rotationYYMatrix( angleYY ) );
-	mvMatrix = mult( mvMatrix, rotationXXMatrix( angleXX ) );
-	mvMatrix = mult( mvMatrix, scalingMatrix( sx, sy, sz ) );
+    mvMatrix = mult(mvMatrix, translationMatrix(tx, ty, tz));
+    mvMatrix = mult(mvMatrix, rotationZZMatrix(angleZZ));
+    mvMatrix = mult(mvMatrix, rotationYYMatrix(angleYY));
+    mvMatrix = mult(mvMatrix, rotationXXMatrix(angleXX));
+    mvMatrix = mult(mvMatrix, scalingMatrix(sx, sy, sz));
 
     gl.useProgram(shaderPrograms['ButtonsSpheres']);
-	// Passing the Model View Matrix to apply the current transformation
+    // Passing the Model View Matrix to apply the current transformation
     var mvUniform = gl.getUniformLocation(shaderPrograms['ButtonsSpheres'], "uMVMatrix");
     gl.uniformMatrix4fv(mvUniform, false, new Float32Array(flatten(mvMatrix)));
 
@@ -429,10 +426,10 @@ function drawModelPanorama(glTmp, angleXX, angleYY, angleZZ,
 
     mvMatrix = mult(mvMatrix, translationMatrix(tx, ty, tz));
 
-    mvMatrix = mult(mvMatrix, rotationZZMatrix(angleZZ));
+    
 
     mvMatrix = mult(mvMatrix, rotationYYMatrix(angleYY));
-
+    mvMatrix = mult(mvMatrix, rotationZZMatrix(angleZZ));
     mvMatrix = mult(mvMatrix, rotationXXMatrix(angleXX));
 
     mvMatrix = mult(mvMatrix, scalingMatrix(sx, sy, sz));
@@ -476,10 +473,10 @@ function drawModelPanoramaCanvas360(glTmp, angleXXCanvas360, angleYYCanvas360, a
 
     mvMatrix = mult(mvMatrix, translationMatrix(tx, ty, tz));
 
-    mvMatrix = mult(mvMatrix, rotationZZMatrix(angleZZCanvas360));
+    
 
     mvMatrix = mult(mvMatrix, rotationYYMatrix(angleYYCanvas360));
-
+    mvMatrix = mult(mvMatrix, rotationZZMatrix(angleZZCanvas360));
     mvMatrix = mult(mvMatrix, rotationXXMatrix(angleXXCanvas360));
 
     mvMatrix = mult(mvMatrix, scalingMatrix(sx, sy, sz));
@@ -517,33 +514,33 @@ function drawModelPanoramaCanvas360(glTmp, angleXXCanvas360, angleYYCanvas360, a
 //  Drawing the 3D scene
 
 function drawScene() {
-	
-	var pMatrix;
-	
-	var mvMatrix = mat4();
-	
+
+    var pMatrix;
+
+    var mvMatrix = mat4();
+
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     //gl_360.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-	
-	if( projectionType == 0 ) {
-		pMatrix = ortho( -1.0, 1.0, -1.0, 1.0, -1.0, 1.0 );
+
+    if (projectionType == 0) {
+        pMatrix = ortho(-1.0, 1.0, -1.0, 1.0, -1.0, 1.0);
         tz = 0;
 
         // NEW --- The viewer is on the ZZ axis at an indefinite distance
         pos_Viewer[0] = pos_Viewer[1] = pos_Viewer[3] = 0.0;
-        pos_Viewer[2] = 1.0; 
-	}
-	else {	
-		
-		pMatrix = perspective( 45, 1, 0.05, 10 );
+        pos_Viewer[2] = 1.0;
+    }
+    else {
+
+        pMatrix = perspective(45, 1, 0.05, 10);
         tz = -2.25;
 
         // NEW --- The viewer is on (0,0,0)
         pos_Viewer[0] = pos_Viewer[1] = pos_Viewer[2] = 0.0;
-        pos_Viewer[3] = 1.0;  
-	}
+        pos_Viewer[3] = 1.0;
+    }
 
-    if(display_department.includes("DMAT")){
+    if (display_department.includes("DMAT")) {
         // Instance --- Departamento de matemática
         drawModelButtonsSpheres(angleXX, -angleYY, -angleZZ,  // CW rotations
             sx * 0.1, sy * 0.1, sz * 0.1,
@@ -553,7 +550,7 @@ function drawScene() {
             primitiveType);
     }
 
-    if(display_department.includes("DCPT")){
+    if (display_department.includes("DCPT")) {
         // Instance --- Departamento Território
         drawModelButtonsSpheres(angleXX, -angleYY, -angleZZ,  // CW rotations
             sx * 0.11, sy * 0.11, sz * 0.11,
@@ -563,37 +560,37 @@ function drawScene() {
             primitiveType);
     }
 
-    if(display_department.includes("DMEC")){
-    	// Instance --- Departamento mecanica
-    	drawModelButtonsSpheres( angleXX, -angleYY, angleZZ, 
+    if (display_department.includes("DMEC")) {
+        // Instance --- Departamento mecanica
+        drawModelButtonsSpheres(angleXX, -angleYY, angleZZ,
             sx * 0.12, sy * 0.12, sz * 0.12,
-    	           tx + 0.06, ty + 0.28, tz,
+            tx + 0.06, ty + 0.28, tz,
             mvMatrix,
             pMatrix,
-    	           primitiveType );
-    }
-	
-    if(display_department.includes("DEC")){
-        // Instance --- Departamento ???
-        drawModelButtonsSpheres( angleXX, -angleYY, -angleZZ, 
-            sx * 0.13, sy * 0.13, sz * 0.13,
-                   tx + 0.0, ty + 0.18, tz,
-            mvMatrix,
-            pMatrix,
-                   primitiveType );
-    }
-
-    if(display_department.includes("DG")){
-        // Instance --- civil ???
-        drawModelButtonsSpheres( angleXX, -angleYY, angleZZ,  // CW rotations
-            sx * 0.14, sy * 0.14, sz * 0.14,
-                   tx - 0.07, ty + 0.08, tz,
-            mvMatrix,
-                   pMatrix,
             primitiveType);
     }
 
-    if(display_department.includes("CCCI")){
+    if (display_department.includes("DEC")) {
+        // Instance --- Departamento ???
+        drawModelButtonsSpheres(angleXX, -angleYY, -angleZZ,
+            sx * 0.13, sy * 0.13, sz * 0.13,
+            tx + 0.0, ty + 0.18, tz,
+            mvMatrix,
+            pMatrix,
+            primitiveType);
+    }
+
+    if (display_department.includes("DG")) {
+        // Instance --- civil ???
+        drawModelButtonsSpheres(angleXX, -angleYY, angleZZ,  // CW rotations
+            sx * 0.14, sy * 0.14, sz * 0.14,
+            tx - 0.07, ty + 0.08, tz,
+            mvMatrix,
+            pMatrix,
+            primitiveType);
+    }
+
+    if (display_department.includes("CCCI")) {
         // Instance --- Departamento ???
         drawModelButtonsSpheres(angleXX, -angleYY, angleZZ,  // CW rotations
             sx * 0.15, sy * 0.15, sz * 0.15,
@@ -603,7 +600,7 @@ function drawScene() {
             primitiveType);
     }
 
-    if(display_department.includes("DEGEIT")){
+    if (display_department.includes("DEGEIT")) {
         // Instance --- Departamento de matemática
         drawModelButtonsSpheres(angleXX, -angleYY, -angleZZ,  // CW rotations
             sx * 0.1, sy * 0.1, sz * 0.1,
@@ -613,7 +610,7 @@ function drawScene() {
             primitiveType);
     }
 
-    if(display_department.includes("CICFANO")){
+    if (display_department.includes("CICFANO")) {
         // Instance --- Departamento Território
         drawModelButtonsSpheres(angleXX, -angleYY, -angleZZ,  // CW rotations
             sx * 0.11, sy * 0.11, sz * 0.11,
@@ -623,33 +620,33 @@ function drawScene() {
             primitiveType);
     }
 
-    if(display_department.includes("DF")){
+    if (display_department.includes("DF")) {
         // Instance --- Departamento mecanica
-        drawModelButtonsSpheres( angleXX, -angleYY, angleZZ, 
+        drawModelButtonsSpheres(angleXX, -angleYY, angleZZ,
             sx * 0.12, sy * 0.12, sz * 0.12,
-                   tx + 0.20, ty + 0.16, tz,
+            tx + 0.20, ty + 0.16, tz,
             mvMatrix,
             pMatrix,
-                   primitiveType );
-    }
-    
-    if(display_department.includes("CLT")){
-        // Instance --- Departamento ???
-        drawModelButtonsSpheres( angleXX, -angleYY, -angleZZ, 
-            sx * 0.13, sy * 0.13, sz * 0.13,
-                   tx + 0.15, ty + 0.02, tz,
-            mvMatrix,
-            pMatrix,
-                   primitiveType );
+            primitiveType);
     }
 
-    if(display_department.includes("DQ")){
-        // Instance --- civil ???
-        drawModelButtonsSpheres( angleXX, -angleYY, angleZZ,  // CW rotations
-            sx * 0.14, sy * 0.14, sz * 0.14,
-                   tx + 0.08, ty - 0.2, tz,
+    if (display_department.includes("CLT")) {
+        // Instance --- Departamento ???
+        drawModelButtonsSpheres(angleXX, -angleYY, -angleZZ,
+            sx * 0.13, sy * 0.13, sz * 0.13,
+            tx + 0.15, ty + 0.02, tz,
             mvMatrix,
-                   pMatrix,
+            pMatrix,
+            primitiveType);
+    }
+
+    if (display_department.includes("DQ")) {
+        // Instance --- civil ???
+        drawModelButtonsSpheres(angleXX, -angleYY, angleZZ,  // CW rotations
+            sx * 0.14, sy * 0.14, sz * 0.14,
+            tx + 0.08, ty - 0.2, tz,
+            mvMatrix,
+            pMatrix,
             primitiveType);
     }
 
@@ -662,7 +659,7 @@ function drawScene() {
         primitiveType);
 
     // Panorama
-    drawModelPanorama(gl, -angleXXPanorama, -angleYYPanorama, -angleZZPanorama,
+    drawModelPanorama(gl, -angleXXPanorama * Math.cos(radians(angleYYPanorama)), -angleYYPanorama, angleXXPanorama * Math.sin(radians(angleYYPanorama)),
         sx, sy, sz,
         tx, ty, tzPanorama,
         mvMatrix,
@@ -670,13 +667,13 @@ function drawScene() {
         primitiveType);
 
     // Panorama canvas 360
-    drawModelPanoramaCanvas360(gl_360, -angleXXPanoramaCanvas360 * Math.cos(radians(angleYYPanoramaCanvas360)), -angleYYPanoramaCanvas360, angleZZPanoramaCanvas360,
+    drawModelPanoramaCanvas360(gl_360, -angleXXPanoramaCanvas360 * Math.cos(radians(angleYYPanoramaCanvas360)), -angleYYPanoramaCanvas360, angleXXPanoramaCanvas360 * Math.sin(radians(angleYYPanoramaCanvas360)),
         sx, sy, sz,
         tx, ty, tzPanoramaCanvas360,
         mvMatrix,
         pMatrix,
         primitiveType);
-	           
+
 }
 
 //----------------------------------------------------------------------------
@@ -689,30 +686,30 @@ function drawScene() {
 var lastTime = 0;
 
 function animate() {
-	
-	var timeNow = new Date().getTime();
-	
-	if( lastTime != 0 ) {
-		
-		var elapsed = timeNow - lastTime;
-		
-		if( rotationXX_ON ) {
 
-			angleXX += rotationXX_DIR * rotationXX_SPEED * (90 * elapsed) / 1000.0;
-	    }
+    var timeNow = new Date().getTime();
 
-		if( rotationYY_ON ) {
+    if (lastTime != 0) {
 
-			angleYY += rotationYY_DIR * rotationYY_SPEED * (90 * elapsed) / 1000.0;
-	    }
+        var elapsed = timeNow - lastTime;
 
-		if( rotationZZ_ON ) {
+        if (rotationXX_ON) {
 
-			angleZZ += rotationZZ_DIR * rotationZZ_SPEED * (90 * elapsed) / 1000.0;
-	    }
-	}
-	
-	lastTime = timeNow;
+            angleXX += rotationXX_DIR * rotationXX_SPEED * (90 * elapsed) / 1000.0;
+        }
+
+        if (rotationYY_ON) {
+
+            angleYY += rotationYY_DIR * rotationYY_SPEED * (90 * elapsed) / 1000.0;
+        }
+
+        if (rotationZZ_ON) {
+
+            angleZZ += rotationZZ_DIR * rotationZZ_SPEED * (90 * elapsed) / 1000.0;
+        }
+    }
+
+    lastTime = timeNow;
 }
 
 //----------------------------------------------------------------------------
@@ -724,108 +721,108 @@ function animate() {
 var currentlyPressedKeys = {};
 
 function handleKeys() {
-	if (currentlyPressedKeys[33]) {
-		// Page Up
-		sx *= 0.9;
-		sz = sy = sx;
-	}
+    if (currentlyPressedKeys[33]) {
+        // Page Up
+        sx *= 0.9;
+        sz = sy = sx;
+    }
 
-	if (currentlyPressedKeys[34]) {	
-		// Page Down
-		sx *= 1.1;
-		sz = sy = sx;
-	}
+    if (currentlyPressedKeys[34]) {
+        // Page Down
+        sx *= 1.1;
+        sz = sy = sx;
+    }
 
-	if (currentlyPressedKeys[37]) {	
-		// Left cursor key
-		if( rotationYY_ON == 0 ) {
-			rotationYY_ON = 1;
-		}  
-		rotationYY_SPEED -= 0.25;
-	}
+    if (currentlyPressedKeys[37]) {
+        // Left cursor key
+        if (rotationYY_ON == 0) {
+            rotationYY_ON = 1;
+        }
+        rotationYY_SPEED -= 0.25;
+    }
 
-	if (currentlyPressedKeys[39]) {	
-		// Right cursor key
-		if( rotationYY_ON == 0 ) {
-			rotationYY_ON = 1;
-		}  
-		rotationYY_SPEED += 0.25;
-	}
+    if (currentlyPressedKeys[39]) {
+        // Right cursor key
+        if (rotationYY_ON == 0) {
+            rotationYY_ON = 1;
+        }
+        rotationYY_SPEED += 0.25;
+    }
 
-	if (currentlyPressedKeys[38]) {
-		// Up cursor key
-		if( rotationXX_ON == 0 ) {
-			rotationXX_ON = 1;
-		}  	
-		rotationXX_SPEED -= 0.25;
-	}
+    if (currentlyPressedKeys[38]) {
+        // Up cursor key
+        if (rotationXX_ON == 0) {
+            rotationXX_ON = 1;
+        }
+        rotationXX_SPEED -= 0.25;
+    }
 
-	if (currentlyPressedKeys[40]) {
-		// Down cursor key
-		if( rotationXX_ON == 0 ) {
-			rotationXX_ON = 1;
-		}  
-		rotationXX_SPEED += 0.25;
-	}
+    if (currentlyPressedKeys[40]) {
+        // Down cursor key
+        if (rotationXX_ON == 0) {
+            rotationXX_ON = 1;
+        }
+        rotationXX_SPEED += 0.25;
+    }
 }
 
 // Timer
 
 function tick() {
-	requestAnimFrame(tick);
-	// NEW --- Processing keyboard events 
-	handleKeys();
+    requestAnimFrame(tick);
+    // NEW --- Processing keyboard events 
+    handleKeys();
     drawScene();
-	animate();
+    animate();
 }
 
 
 
 
 
-function initWebGL( canvas) {
-	try {
-		
-		// Create the WebGL context
-		
-		// Some browsers still need "experimental-webgl"
-		
+function initWebGL(canvas) {
+    try {
+
+        // Create the WebGL context
+
+        // Some browsers still need "experimental-webgl"
+
         var glTmp = canvas.getContext("webgl");
-		
-		// DEFAULT: The viewport occupies the whole canvas 
-		
-		// DEFAULT: The viewport background color is WHITE
-		
-		// NEW - Drawing the triangles defining the model
-		
+
+        // DEFAULT: The viewport occupies the whole canvas 
+
+        // DEFAULT: The viewport background color is WHITE
+
+        // NEW - Drawing the triangles defining the model
+
         primitiveType = glTmp.TRIANGLES;
-		
-		// DEFAULT: The Depth-Buffer is DISABLED
-		
-		// Enable it !
-		
+
+        // DEFAULT: The Depth-Buffer is DISABLED
+
+        // Enable it !
+
         glTmp.enable(glTmp.DEPTH_TEST);
 
         return glTmp;
-		
-	} catch (e) {
-	}
+
+    } catch (e) {
+    }
     if (!glTmp) {
-		alert("Could not initialise WebGL, sorry! :-(");
-	}        
+        alert("Could not initialise WebGL, sorry! :-(");
+    }
 }
 
-function getValue(){
-    if(turn==1){
+function getValue() {
+    if (turn == 1) {
         display_department = '';
     }
     var checks = document.getElementsByClassName('checks');
-    for ( i = 0; i < 11; i++) {
-        if ( checks[i].checked === true ) {
+    for (i = 0; i < 11; i++) {
+        if (checks[i].checked === true) {
             display_department += checks[i].value + " ";
         }
     }
-    if(turn==0){
+    if (turn == 0) {
         turn = 1;
     }
 }
@@ -834,7 +831,7 @@ function getValue(){
 var shaderPrograms = [];
 function runWebGL() {
     var checks = document.getElementsByClassName('checks');
-    for ( i = 0; i < 11; i++) {
+    for (i = 0; i < 11; i++) {
         checks[i].checked = true;
         display_department += checks[i].value + " ";
     }
@@ -864,10 +861,8 @@ function runWebGL() {
 
     initTextureMap(gl);
     //initTexturePanorama("Photos/DCPT-12.jpg"); Textura é inicializada ao clicar  numa esfera
-    
+
     tick();		// A timer controls the rendering / animation  
 
-	getClickCanvas();
+    getClickCanvas();
 }
-
-
