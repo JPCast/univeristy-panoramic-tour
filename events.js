@@ -127,19 +127,6 @@ function setEventListenersCanvas360(canvas) {
     canvas.onmousemove = handleMouseMoveCanvas360;
 }
 
-function toggleHandle(){
-    console.log("hello");
-    toggle = document.getElementById('toggle-switch');
-    if(toggle.checked){
-        document.getElementById("360 view").innerHTML = "360 degrees View";
-        tzPanoramaCanvas360 = 0;
-    }
-    else{
-        tzPanoramaCanvas360 = 5;
-        document.getElementById("360 view").innerHTML = "";   
-    }
-}
-
 function onDown(event) {
     toggle = document.getElementById('toggle-switch');
     var cnvs = document.getElementById('my-canvas');
