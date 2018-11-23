@@ -1,9 +1,4 @@
-//----------------------------------------------------------------------------
-
-// Handling mouse events
-
-// Adapted from www.learningwebgl.com
-
+var bellow_canvas = false;
 
 var mouseDown = false;
 
@@ -139,28 +134,93 @@ function onDown(event) {
     //console.log("x" + posx);
     //console.log("y" + posy);
     if (isDisplayingMap) {
-        if ((posx > 623 && posx < 635) && (posy > 225 && posy < 619) && display_department.includes("DMAT")) {
+        if ((posx > 643 && posx < 675) && (posy > 164 && posy < 180) && display_department.includes("DMAT")) {
             isDisplayingMap = false;
-            initTexturePanorama(gl, 'Panorama', "Photos/DMAT-11(2).jpg");
-            initTexturePanoramaCanvas360(gl_360, 'PanoramaCanvas360', "Photos/DMAT-11(2).jpg");
+            if(!bellow_canvas)
+                initTexturePanorama(gl, 'Panorama', "Photos/DMAT-11(2).jpg");
+            else
+                initTexturePanoramaCanvas360(gl_360, 'PanoramaCanvas360', "Photos/DMAT-11(2).jpg");
             tzPanorama = 0.0;
         }
-        else if ((posx > 606 && posx < 622) && (posy > 236 && posy < 645) && display_department.includes("DCPT")) {
+        else if ((posx > 611 && posx < 635) && (posy > 192 && posy < 205) && display_department.includes("DCPT")) {
             isDisplayingMap = false;
-            initTexturePanorama(gl, 'Panorama', "Photos/DCPT-12.jpg");
-            initTexturePanoramaCanvas360(gl_360, 'PanoramaCanvas360', "Photos/DCPT-12.jpg");
+            if(!bellow_canvas)
+                initTexturePanorama(gl, 'Panorama', "Photos/DCPT-12.jpg");
+            else
+                initTexturePanoramaCanvas360(gl_360, 'PanoramaCanvas360', "Photos/DCPT-12.jpg");
             tzPanorama = 0.0;
         }
-        else if ((posx > 577 && posx < 603) && (posy > 253 && posy < 264) && display_department.includes("DMEC")) {
+        else if ((posx > 588 && posx < 629) && (posy > 216 && posy < 231) && display_department.includes("DMEC")) {
             isDisplayingMap = false;
-            initTexturePanorama(gl, 'Panorama', "Photos/DMEC-22.jpg");
-            initTexturePanoramaCanvas360(gl_360, 'PanoramaCanvas360', "Photos/DMEC-22.jpg");
+            if(!bellow_canvas)
+                initTexturePanorama(gl, 'Panorama', "Photos/DMEC-22.jpg");
+            else
+                initTexturePanoramaCanvas360(gl_360, 'PanoramaCanvas360', "Photos/DMEC-22.jpg");
             tzPanorama = 0.0;
         }
-        else if ((posx > 549 && posx < 579) && (posy > 279 && posy < 291) && display_department.includes("DEC")) {
+        else if ((posx > 553 && posx < 589) && (posy > 250 && posy < 270) && display_department.includes("DEC")) {
             isDisplayingMap = false;
-            initTexturePanorama(gl, 'Panorama', "Photos/DEC-28.jpg");
-            initTexturePanoramaCanvas360(gl_360, 'PanoramaCanvas360', "Photos/DEC-28.jpg");
+            if(!bellow_canvas)
+                initTexturePanorama(gl, 'Panorama', "Photos/DEC-28.jpg");
+            else
+                initTexturePanoramaCanvas360(gl_360, 'PanoramaCanvas360', "Photos/DEC-28.jpg");
+            tzPanorama = 0.0;
+        }
+        else if ((posx > 506 && posx < 550) && (posy > 280 && posy < 305) && display_department.includes("DG")) {
+            isDisplayingMap = false;
+            if(!bellow_canvas)
+                initTexturePanorama(gl, 'Panorama', "Photos/DG-16.jpg");
+            else
+                initTexturePanoramaCanvas360(gl_360, 'PanoramaCanvas360', "Photos/DG-16.jpg");
+            tzPanorama = 0.0;
+        }
+        else if ((posx > 447 && posx < 497) && (posy > 336 && posy < 365) && display_department.includes("CCCI")) {
+            isDisplayingMap = false;
+            if(!bellow_canvas)
+                initTexturePanorama(gl, 'Panorama', "Photos/CCCI-40.jpg");
+            else
+                initTexturePanoramaCanvas360(gl_360, 'PanoramaCanvas360', "Photos/CCCI-40.jpg");
+            tzPanorama = 0.0;
+        }
+        //new
+        else if ((posx > 553 && posx < 589) && (posy > 250 && posy < 270) && display_department.includes("DEGEIT")) {
+            isDisplayingMap = false;
+            if(!bellow_canvas)
+                initTexturePanorama(gl, 'Panorama', "Photos/DEGEIT-10.jpg");
+            else
+                initTexturePanoramaCanvas360(gl_360, 'PanoramaCanvas360', "Photos/DEGEIT-10.jpg");
+            tzPanorama = 0.0;
+        }
+        else if ((posx > 611 && posx < 635) && (posy > 192 && posy < 205) && display_department.includes("CICFANO")) {
+            isDisplayingMap = false;
+            if(!bellow_canvas)
+                initTexturePanorama(gl, 'Panorama', "Photos/CICFANO-32.jpg");
+            else
+                initTexturePanoramaCanvas360(gl_360, 'PanoramaCanvas360', "Photos/CICFANO-32.jpg");
+            tzPanorama = 0.0;
+        }
+        else if ((posx > 588 && posx < 629) && (posy > 216 && posy < 231) && display_department.includes("DF")) {
+            isDisplayingMap = false;
+            if(!bellow_canvas)
+                initTexturePanorama(gl, 'Panorama', "Photos/DF-13.jpg");
+            else
+                initTexturePanoramaCanvas360(gl_360, 'PanoramaCanvas360', "Photos/DF-13.jpg");
+            tzPanorama = 0.0;
+        }
+        else if ((posx > 553 && posx < 589) && (posy > 250 && posy < 270) && display_department.includes("CLT")) {
+            isDisplayingMap = false;
+            if(!bellow_canvas)
+                initTexturePanorama(gl, 'Panorama', "Photos/CLT-29.jpg");
+            else
+                initTexturePanoramaCanvas360(gl_360, 'PanoramaCanvas360', "Photos/CLT-29.jpg");
+            tzPanorama = 0.0;
+        }
+        else if ((posx > 553 && posx < 589) && (posy > 250 && posy < 270) && display_department.includes("DQ")) {
+            isDisplayingMap = false;
+            if(!bellow_canvas)
+                initTexturePanorama(gl, 'Panorama', "Photos/DQ-15.jpg");
+            else
+                initTexturePanoramaCanvas360(gl_360, 'PanoramaCanvas360', "Photos/DQ-15.jpg");
             tzPanorama = 0.0;
         }
 
@@ -170,9 +230,9 @@ function onDown(event) {
             tzPanorama = 5.0;
         }
     }
-    /*
+    
     str = posx+", "+posy;
-    alert(str);*/
+    alert(str);
 }
 
 function getClickCanvas() {
