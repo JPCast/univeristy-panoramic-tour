@@ -127,17 +127,18 @@ function setEventListenersCanvas360(canvas) {
     canvas.onmousemove = handleMouseMoveCanvas360;
 }
 
-var toggle = document.getElementById('toggle-switch');
-toggle.addEventListener('click', function() {
+function toggleHandle(){
+    console.log("hello");
+    toggle = document.getElementById('toggle-switch');
     if(toggle.checked){
-        document.getElementById("360 view").innerHTML = "360 degress View";
-        tzPanoramaCanvas360 = 0.0;
+        document.getElementById("360 view").innerHTML = "360 degrees View";
+        tzPanoramaCanvas360 = 0;
     }
     else{
-        document.getElementById("360 view").innerHTML = "";
         tzPanoramaCanvas360 = 5;
+        document.getElementById("360 view").innerHTML = "";   
     }
-});
+}
 
 function onDown(event) {
     toggle = document.getElementById('toggle-switch');
@@ -154,9 +155,9 @@ function onDown(event) {
                 initTexturePanorama(gl, 'Panorama', "Photos/DMAT-11(2).jpg");
                 tzPanorama = 0.0;
             }
-            else if ((posx > 611 && posx < 635) && (posy > 192 && posy < 205) && display_department.includes("DCPT")) {
+            else if ((posx > 611 && posx < 640) && (posy > 192 && posy < 205) && display_department.includes("DCPT")) {
                 isDisplayingMap = false;
-                initTexturePanorama(gl, 'Panorama', "Photos/DCPT-12.jpg");
+                initTexturePanorama(gl, 'Panorama', "Photos/DCPT-12.png");
                 tzPanorama = 0.0;
             }
             else if ((posx > 588 && posx < 629) && (posy > 216 && posy < 231) && display_department.includes("DMEC")) {
@@ -166,22 +167,22 @@ function onDown(event) {
             }
             else if ((posx > 553 && posx < 589) && (posy > 250 && posy < 270) && display_department.includes("DEC")) {
                 isDisplayingMap = false;
-                initTexturePanorama(gl, 'Panorama', "Photos/DEC-28.jpg");
+                initTexturePanorama(gl, 'Panorama', "Photos/DEC-28.png");
                 tzPanorama = 0.0;
             }
             else if ((posx > 506 && posx < 550) && (posy > 280 && posy < 305) && display_department.includes("DG")) {
                 isDisplayingMap = false;
-                initTexturePanorama(gl, 'Panorama', "Photos/DG-16.jpg");
+                initTexturePanorama(gl, 'Panorama', "Photos/DG-16.png");
                 tzPanorama = 0.0;
             }
             else if ((posx > 447 && posx < 497) && (posy > 336 && posy < 365) && display_department.includes("CCCI")) {
                 isDisplayingMap = false;
-                initTexturePanorama(gl, 'Panorama', "Photos/CCCI-40.jpg");
+                initTexturePanorama(gl, 'Panorama', "Photos/CCCI-40.png");
                 tzPanorama = 0.0;
             }
             else if ((posx > 730 && posx < 762) && (posy > 191 && posy < 209) && display_department.includes("DEGEIT")) {
                 isDisplayingMap = false;
-                initTexturePanorama(gl, 'Panorama', "Photos/DEGEIT-10.jpg");
+                initTexturePanorama(gl, 'Panorama', "Photos/DEGEIT-10.png");
                 tzPanorama = 0.0;
             }
             else if ((posx > 710 && posx < 745) && (posy > 220 && posy < 232) && display_department.includes("CICFANO")) {
@@ -191,17 +192,17 @@ function onDown(event) {
             }
             else if ((posx > 673 && posx < 713) && (posy > 255 && posy < 271) && display_department.includes("DF")) {
                 isDisplayingMap = false;
-                initTexturePanorama(gl, 'Panorama', "Photos/DF-13.jpg");
+                initTexturePanorama(gl, 'Panorama', "Photos/DF-13.png");
                 tzPanorama = 0.0;
             }
             else if ((posx > 643 && posx < 682) && (posy > 305 && posy < 325) && display_department.includes("CLT")) {
                 isDisplayingMap = false;
                 tzPanorama = 0.0;
-                initTexturePanorama(gl, 'Panorama', "Photos/CLT-29.jpg");
+                initTexturePanorama(gl, 'Panorama', "Photos/CLT-29.png");
             }
             else if ((posx > 599 && posx < 645) && (posy > 382 && posy < 405) && display_department.includes("DQ")) {
                 isDisplayingMap = false;
-                initTexturePanorama(gl, 'Panorama', "Photos/DQ-15.jpg");
+                initTexturePanorama(gl, 'Panorama', "Photos/DQ-15.png");
                 tzPanorama = 0.0;
             }
         }
@@ -212,44 +213,45 @@ function onDown(event) {
             }
         }
     } else {
-        document.getElementById("360 view").innerHTML = "360 degress View";
+        document.getElementById("360 view").innerHTML = "360 degrees View";
         if ((posx > 643 && posx < 675) && (posy > 164 && posy < 180) && display_department.includes("DMAT")) {
             initTexturePanoramaCanvas360(gl_360, 'PanoramaCanvas360', "Photos/DMAT-11(2).jpg");
         }
-        else if ((posx > 611 && posx < 635) && (posy > 192 && posy < 205) && display_department.includes("DCPT")) {
-            initTexturePanoramaCanvas360(gl_360, 'PanoramaCanvas360', "Photos/DCPT-12.jpg");
+        else if ((posx > 611 && posx < 640) && (posy > 192 && posy < 205) && display_department.includes("DCPT")) {
+            initTexturePanoramaCanvas360(gl_360, 'PanoramaCanvas360', "Photos/DCPT-12.png");
         }
         else if ((posx > 588 && posx < 629) && (posy > 216 && posy < 231) && display_department.includes("DMEC")) {
             initTexturePanoramaCanvas360(gl_360, 'PanoramaCanvas360', "Photos/DMEC-22.jpg");
         }
         else if ((posx > 553 && posx < 589) && (posy > 250 && posy < 270) && display_department.includes("DEC")) {
-            initTexturePanoramaCanvas360(gl_360, 'PanoramaCanvas360', "Photos/DEC-28.jpg");
+            initTexturePanoramaCanvas360(gl_360, 'PanoramaCanvas360', "Photos/DEC-28.png");
         }
         else if ((posx > 506 && posx < 550) && (posy > 280 && posy < 305) && display_department.includes("DG")) {
-            initTexturePanoramaCanvas360(gl_360, 'PanoramaCanvas360', "Photos/DG-16.jpg");
+            initTexturePanoramaCanvas360(gl_360, 'PanoramaCanvas360', "Photos/DG-16.png");
         }
         else if ((posx > 447 && posx < 497) && (posy > 336 && posy < 365) && display_department.includes("CCCI")) {
-            initTexturePanoramaCanvas360(gl_360, 'PanoramaCanvas360', "Photos/CCCI-40.jpg");
+            initTexturePanoramaCanvas360(gl_360, 'PanoramaCanvas360', "Photos/CCCI-40.png");
         }
         else if ((posx > 730 && posx < 762) && (posy > 191 && posy < 209) && display_department.includes("DEGEIT")) {
-            initTexturePanoramaCanvas360(gl_360, 'PanoramaCanvas360', "Photos/DEGEIT-10.jpg");
+            initTexturePanoramaCanvas360(gl_360, 'PanoramaCanvas360', "Photos/DEGEIT-10.png");
         }
         else if ((posx > 710 && posx < 745) && (posy > 220 && posy < 232) && display_department.includes("CICFANO")) {
             initTexturePanoramaCanvas360(gl_360, 'PanoramaCanvas360', "Photos/CICFANO-32.jpg");
         }
         else if ((posx > 673 && posx < 713) && (posy > 255 && posy < 271) && display_department.includes("DF")) {
-            initTexturePanoramaCanvas360(gl_360, 'PanoramaCanvas360', "Photos/DF-13.jpg");
+            initTexturePanoramaCanvas360(gl_360, 'PanoramaCanvas360', "Photos/DF-13.png");
         }
         else if ((posx > 643 && posx < 682) && (posy > 305 && posy < 325) && display_department.includes("CLT")) {
-            initTexturePanoramaCanvas360(gl_360, 'PanoramaCanvas360', "Photos/CLT-29.jpg");
+            initTexturePanoramaCanvas360(gl_360, 'PanoramaCanvas360', "Photos/CLT-29.png");
         }
         else if ((posx > 599 && posx < 645) && (posy > 382 && posy < 405) && display_department.includes("DQ")) {
-            initTexturePanoramaCanvas360(gl_360, 'PanoramaCanvas360', "Photos/DQ-15.jpg");
+            initTexturePanoramaCanvas360(gl_360, 'PanoramaCanvas360', "Photos/DQ-15.png");
         }
     }
     /*
     str = posx+", "+posy;
-    alert(str);*/
+    alert(str);
+    */
 }
 
 function getClickCanvas() {

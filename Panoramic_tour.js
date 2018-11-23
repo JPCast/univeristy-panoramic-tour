@@ -772,6 +772,16 @@ function tick() {
     requestAnimFrame(tick);
     // NEW --- Processing keyboard events 
     handleKeys();
+    var toggle = document.getElementById('toggle-switch');
+    if(toggle.checked){
+        document.getElementById("360 view").innerHTML = "360 degrees View";
+        tzPanoramaCanvas360 = 0;
+    }
+    else{
+        tzPanoramaCanvas360 = 5;
+        document.getElementById("360 view").innerHTML = "";
+        initTexturePanoramaCanvas360(gl_360, 'PanoramaCanvas360', "Photos/inexistente(2).jpg");
+    }
     drawScene();
     animate();
 }
