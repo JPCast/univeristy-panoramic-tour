@@ -5,13 +5,7 @@
     <title>University Panorama</title>
 
     <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
-    <link rel="stylesheet" type="text/css" href="bootstrap-4.0.0-dist/css/bootstrap.css" />
-    <link rel="stylesheet" type="text/css" href="bootstrap-4.0.0-dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" type="text/css" href="bootstrap-4.0.0-dist/css/bootstrap-grid.css" />
-    <link rel="stylesheet" type="text/css" href="bootstrap-4.0.0-dist/css/bootstrap-grid.min.css" />
-    <link rel="stylesheet" type="text/css" href="bootstrap-4.0.0-dist/css/bootstrap-reboot.css" />
-    <link rel="stylesheet" type="text/css" href="bootstrap-4.0.0-dist/css/bootstrap-reboot.min.css" />
-    <link rel="stylesheet" type="text/css" href="bootstrap-4.0.0-dist/css/custom.css" />
+    <link rel="stylesheet" type="text/css" href="custom.css" />
 
     <script id="shader-vs-buttons-spheres" type="x-shader/x-vertex">
         attribute vec3 aVertexPosition;
@@ -185,6 +179,7 @@
 
 	<div id="mySidenav" class="sidenav">
 	  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+      <p>Escolha os departamentos que quer ver</p>
 	  <input type="checkbox" class="checks" value="DMAT" checked>Departamento de Matematica<br>
 	  <input type="checkbox" class="checks" value="DCPT" checked>Departamento de Ciencias Sociais<br>
 	  <input type="checkbox" class="checks" value="DMEC" checked>Departamento de Engenharia Mecanica<br>
@@ -197,17 +192,14 @@
       <input type="checkbox" class="checks" value="CICFANO" checked>CICFANO<br>
       <input type="checkbox" class="checks" value="DEGEIT" checked>Departamento de Economia, Gestao e Engenharia Industrial e Turismo<br>
 	  <a href="#" onclick="getValue();return false;">Submeter</a>
-      <p>Display panoramic view in canvas bellow
+      <p>Mostrar vista panoramica num canvas em baixo
 	  <label class="switch">
         <input id='toggle-switch' type="checkbox" unchecked>
         <span class="slider round"></span>
       </label>
       </p>
 	</div>
-
-	
-	<h4>Escolha os departamentos que quer ver:</h4>
-	<span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; Abrir</span>
+	<span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776;   Abrir</span>
 
 	<script>
 	function openNav() {
